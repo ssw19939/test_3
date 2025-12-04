@@ -6,7 +6,7 @@
     <title>HG AI Agents</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -14,29 +14,92 @@
             --app-bg-saju: #fffdf5; 
             --text-panda: #673ab7; 
             --text-cat: #ff5252;
-            --maple-border: #3e2723;
+            --gemini-blue: #4285f4;
         }
-        /* 100dvh를 사용하여 모바일 브라우저 상하단 바 대응 */
-        body { background-color: #000; margin: 0; overflow: hidden; font-family: 'Do Hyeon', sans-serif; display: flex; justify-content: center; align-items: center; height: 100dvh; }
+        body { background-color: #f0f4f9; margin: 0; overflow: hidden; font-family: 'Noto Sans KR', sans-serif; display: flex; justify-content: center; align-items: center; height: 100dvh; }
         .hidden { display: none !important; }
         
-        /* 앱 컨테이너: flex-col로 상단/중단/하단 분리 */
-        .app-container { width: 100%; max-width: 600px; height: 100dvh; display: flex; flex-direction: column; position: relative; background: #fff; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        /* 앱 컨테이너 */
+        .app-container { width: 100%; max-width: 600px; height: 100dvh; display: flex; flex-direction: column; position: relative; background: #fff; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.1); }
 
-        /* --- 로그인 화면 --- */
-        #login-screen { position: absolute; inset: 0; z-index: 9999; background: url('https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=1000&auto=format&fit=crop') no-repeat center center; background-size: cover; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #login-screen::before { content: ''; position: absolute; inset: 0; background: rgba(0, 30, 10, 0.6); backdrop-filter: blur(3px); }
-        .maple-title { position: relative; z-index: 10; font-family: 'Black Han Sans', sans-serif; font-size: 3.5rem; color: #fff; text-shadow: 3px 3px 0 #ff6f00, -1px -1px 0 #ff6f00, 1px -1px 0 #ff6f00, -1px 1px 0 #ff6f00, 1px 1px 0 #ff6f00, 5px 5px 10px rgba(0,0,0,0.5); margin-bottom: 20px; transform: rotate(-2deg); animation: float-title 3s ease-in-out infinite; }
-        @keyframes float-title { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-10px) rotate(-2deg); } }
-        .login-board { position: relative; z-index: 10; width: 85%; max-width: 350px; background: #8d6e63; background-image: repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(0,0,0,0.05) 10px, rgba(0,0,0,0.05) 20px); border: 6px solid var(--maple-border); border-radius: 15px; padding: 30px 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 15px; }
-        .corner-deco { position: absolute; width: 10px; height: 10px; background: #b0bec5; border-radius: 50%; box-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
-        .cd-tl { top: 10px; left: 10px; } .cd-tr { top: 10px; right: 10px; } .cd-bl { bottom: 10px; left: 10px; } .cd-br { bottom: 10px; right: 10px; }
-        .maple-input { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 2px solid #a1887f; border-radius: 8px; color: #fff; font-size: 1.1rem; text-align: center; outline: none; font-family: 'Do Hyeon', sans-serif; }
-        .maple-input::placeholder { color: #d7ccc8; } .maple-input:focus { border-color: #ffca28; background: rgba(0,0,0,0.5); }
-        .maple-btn { width: 100%; padding: 12px; background: linear-gradient(to bottom, #ffca28, #ff6f00); border: 2px solid #3e2723; border-radius: 8px; font-family: 'Black Han Sans', sans-serif; font-size: 1.3rem; color: #3e2723; cursor: pointer; text-shadow: 1px 1px 0 rgba(255,255,255,0.4); box-shadow: 0 4px 0 #3e2723; transition: transform 0.1s; }
-        .maple-btn:active { transform: translateY(4px); box-shadow: none; }
+        /* --- 1. 로그인 화면 (Gemini Style) --- */
+        #login-screen { 
+            position: absolute; inset: 0; z-index: 9999; 
+            background: linear-gradient(180deg, #ffffff 0%, #f0f4f9 100%);
+            display: flex; flex-direction: column; 
+            padding: 20px;
+        }
 
-        /* --- 선택 화면 --- */
+        .gemini-header {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding-bottom: 60px;
+        }
+
+        .gemini-logo {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 500;
+            background: linear-gradient(90deg, #4285f4, #9b72cb, #d96570);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .gemini-greeting {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #c4c7c5;
+            line-height: 1.3;
+        }
+        .gemini-greeting span {
+            display: block;
+            background: linear-gradient(90deg, #4b90ff, #ff5546);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .chat-input-area {
+            background: #fff;
+            border-radius: 30px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .chat-input-area:focus-within {
+            box-shadow: 0 4px 20px rgba(66, 133, 244, 0.2);
+            border-color: #4285f4;
+        }
+        .chat-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            padding: 10px;
+            color: #333;
+        }
+        .chat-submit-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #4285f4;
+            font-size: 1.2rem;
+            padding: 5px;
+            transition: transform 0.2s;
+        }
+        .chat-submit-btn:hover { transform: scale(1.1); }
+        .version-tag { position: absolute; top: 20px; right: 20px; font-size: 0.75rem; color: #aaa; font-weight: bold; }
+
+
+        /* --- 2. 선택 화면 (기존 유지) --- */
         #selection-screen { position: absolute; inset: 0; background: #000; }
         .split-panel { position: absolute; top: 0; bottom: 0; width: 100%; height: 100%; transition: clip-path 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s; cursor: pointer; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .panel-left { background: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%); clip-path: polygon(0 0, 60% 0, 40% 100%, 0 100%); z-index: 10; }
@@ -50,7 +113,7 @@
         .title-badge { margin-top: 15px; padding: 8px 20px; border-radius: 12px; font-family: 'Black Han Sans', sans-serif; font-size: 2.5rem; background: rgba(255,255,255,0.95); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         .panel-left .title-badge { color: var(--text-panda); border: 3px solid var(--text-panda); } .panel-right .title-badge { color: var(--text-cat); border: 3px solid var(--text-cat); }
 
-        /* --- 앱 내부 공통 --- */
+        /* --- 3. 앱 내부 공통 --- */
         .theme-tarot .app-container { background: var(--app-bg-tarot); } .theme-saju .app-container { background: var(--app-bg-saju); }
         #main-header { flex-shrink: 0; padding: 15px; display: flex; justify-content: space-between; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 50; transition: background 0.3s; }
         .action-btn { border-radius: 25px; padding: 12px; border: none; font-size: 1.1rem; font-family: 'Black Han Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.2); transition: 0.1s; }
@@ -58,38 +121,54 @@
         @media (max-width: 768px) { .char-img { width: 140px; height: 140px; } .title-badge { font-size: 1.8rem; } .split-panel:hover { z-index: 10; clip-path: inherit; } .panel-left:hover { clip-path: polygon(0 0, 60% 0, 40% 100%, 0 100%); } .panel-right:hover { clip-path: polygon(60% 0, 100% 0, 100% 100%, 40% 100%); } }
 
         /* --- 타로 카드 테이블 & 스크롤 --- */
-        /* 카드가 많으므로 gap을 조금 줄이고 정렬 */
         #tarot-card-table { 
             display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; 
-            gap: 5px; padding: 10px; perspective: 1000px; 
-            /* 내부 스크롤 설정 */
+            gap: 4px; padding: 10px; perspective: 1000px; 
             overflow-y: auto; flex: 1; width: 100%;
         }
         .tarot-card-face { 
-            width: 48px; height: 75px; /* 78장을 위해 크기 약간 축소 */
+            width: 46px; height: 72px; /* 카드 크기 미세 조정 */
             background: radial-gradient(circle at center, #673ab7 0%, #311b92 100%); 
             border: 1px solid #b39ddb; border-radius: 4px; 
             box-shadow: 0 2px 5px rgba(0,0,0,0.3); 
-            display: flex; justify-content: center; align-items: center; 
-            font-size: 1rem; cursor: pointer; 
-            transition: transform 0.1s, box-shadow 0.1s; 
-            position: relative; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            font-size: 0.8rem; cursor: pointer; 
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s; 
+            position: relative; overflow: hidden;
         }
         .deck-waite { background: radial-gradient(circle, #7e57c2 0%, #4527a0 100%); }
         .deck-belline { background: radial-gradient(circle, #1e88e5 0%, #0d47a1 100%); border-color: #90caf9; }
         .deck-lenormand { background: radial-gradient(circle, #8d6e63 0%, #4e342e 100%); border-color: #bcaaa4; }
-        .tarot-card-face::after { content: '🎋'; opacity: 0.8; }
+        .tarot-card-face::after { content: '🎋'; opacity: 0.8; font-size: 1.2rem; }
         
-        /* 선택 시 효과 */
-        .tarot-card-face:active { transform: scale(0.9); }
-        .card-selected { 
-            background: radial-gradient(circle at center, #ffd54f 0%, #ff6f00 100%) !important; 
-            border-color: #fff !important; 
-            transform: translateY(-5px) scale(1.1) !important; 
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.9) !important; 
-            z-index: 20; 
+        /* 카드 이름 표시 (숨김 상태) */
+        .card-name-label {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            font-size: 8px;
+            text-align: center;
+            padding: 2px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .card-selected::after { content: '✨'; }
+
+        /* 선택 시 효과 */
+        .card-selected { 
+            background: #fff !important; /* 뒤집힌 효과 (흰색 배경) */
+            border-color: #ff6f00 !important; 
+            transform: translateY(-8px) scale(1.2) rotateY(180deg) !important; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4) !important; 
+            z-index: 50; 
+        }
+        .card-selected::after { content: ''; } /* 뒷면 무늬 제거 */
+        .card-selected .card-name-label { opacity: 1; transform: rotateY(180deg); /* 텍스트 반전 보정 */ }
+        .card-selected::before {
+            content: '✨'; font-size: 1.5rem; transform: rotateY(180deg);
+        }
 
         /* 셔플 애니메이션 */
         #tarot-shuffle-view { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
@@ -112,14 +191,21 @@
 <div class="app-container">
 
     <div id="login-screen">
-        <h1 class="maple-title">HG AI Agents</h1>
-        <div class="login-board">
-            <div class="corner-deco cd-tl"></div><div class="corner-deco cd-tr"></div><div class="corner-deco cd-bl"></div><div class="corner-deco cd-br"></div>
-            <div class="text-center text-white/80 text-sm mb-2 font-bold">System Access</div>
-            <input type="password" id="login-api-key" class="maple-input" placeholder="Google Gemini API Key 입력">
-            <button onclick="attemptLogin()" class="maple-btn">로그인</button>
+        <div class="version-tag">HG Agent v1.2.0</div>
+        
+        <div class="gemini-header">
+            <div class="gemini-logo">HG AI Agent</div>
+            <div class="gemini-greeting">
+                <span id="greeting-msg">안녕하세요,</span>
+                무엇을 도와드릴까요?
+            </div>
         </div>
-        <div class="absolute bottom-2 right-2 text-white/40 text-[10px] font-sans font-bold z-20">v1.2.0 (Full Deck)</div>
+
+        <div class="chat-input-area">
+            <input type="password" id="login-api-key" class="chat-input" placeholder="Google Gemini API Key를 입력하세요..." onkeypress="if(event.key==='Enter') attemptLogin()">
+            <button onclick="attemptLogin()" class="chat-submit-btn">➤</button>
+        </div>
+        <p class="text-xs text-gray-400 text-center pb-4">입력하신 키는 세션 동안만 유지됩니다.</p>
     </div>
 
     <div id="selection-screen" class="hidden">
@@ -276,6 +362,7 @@
         userApiKey = key;
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('selection-screen').classList.remove('hidden');
+        // 로그인 성공 시 로컬스토리지나 메모리에 저장하여 재사용 가능 (현재는 세션 유지)
         if(dbTarot) loadConfig('tarot', true); if(dbSaju) loadConfig('saju', true);
     };
 
@@ -309,7 +396,6 @@
 
     window.showView = (viewId) => {
         const container = document.getElementById(`${currentMode}-app`);
-        // 모든 뷰 숨김
         const children = container.children;
         for(let c of children) c.classList.add('hidden');
 
@@ -340,10 +426,29 @@
     }
 
     // --- Tarot Logic ---
+    // 실제 덱 이름 생성 헬퍼
+    function getCardName(deckKey, idx) {
+        if(deckKey === 'waite') {
+            const majors = ["The Fool", "The Magician", "The High Priestess", "The Empress", "The Emperor", "The Hierophant", "The Lovers", "The Chariot", "Strength", "The Hermit", "Wheel of Fortune", "Justice", "The Hanged Man", "Death", "Temperance", "The Devil", "The Tower", "The Star", "The Moon", "The Sun", "Judgement", "The World"];
+            if(idx < 22) return majors[idx];
+            
+            const suits = ["Wands", "Cups", "Swords", "Pentacles"];
+            const ranks = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Page", "Knight", "Queen", "King"];
+            const minorIdx = idx - 22;
+            const suit = suits[Math.floor(minorIdx / 14)];
+            const rank = ranks[minorIdx % 14];
+            return `${rank} of ${suit}`;
+        }
+        else if(deckKey === 'belline') return `Belline Card #${idx + 1}`;
+        else if(deckKey === 'lenormand') return `Lenormand Card #${idx + 1}`;
+        return `Card #${idx + 1}`;
+    }
+
+    // 카드 덱 정보: Waite 78, Belline 53, Lenormand 36
     const TAROT_STAGES = [
-        { key: 'waite', name: '유니버셜 웨이트', pick: 4, color: 'deck-waite' },
-        { key: 'belline', name: '호로스코프 벨린', pick: 3, color: 'deck-belline' },
-        { key: 'lenormand', name: '레노먼드', pick: 3, color: 'deck-lenormand' }
+        { key: 'waite', name: '유니버셜 웨이트', pick: 4, color: 'deck-waite', count: 78 },
+        { key: 'belline', name: '호로스코프 벨린', pick: 3, color: 'deck-belline', count: 53 },
+        { key: 'lenormand', name: '레노먼드', pick: 3, color: 'deck-lenormand', count: 36 }
     ];
 
     window.startTarotFlow = () => {
@@ -365,7 +470,7 @@
         setTimeout(() => {
             showView('tarot-view-game');
             setupCardTable(config);
-        }, 1500); // 셔플 시간 단축
+        }, 1500); 
     }
 
     function setupCardTable(config) {
@@ -378,29 +483,45 @@
         const table = document.getElementById('tarot-card-table');
         table.innerHTML = "";
         
-        // ★★★ 핵심 수정: 78장 풀 데크 생성 ★★★
-        const TOTAL_CARDS = 78; 
-        for(let i=0; i<TOTAL_CARDS; i++) {
+        // --- 진짜 셔플 로직 ---
+        const totalCards = config.count;
+        let cardIndices = Array.from({length: totalCards}, (_, i) => i);
+        // Fisher-Yates Shuffle
+        for (let i = cardIndices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cardIndices[i], cardIndices[j]] = [cardIndices[j], cardIndices[i]];
+        }
+        
+        cardIndices.forEach(idx => {
+            const cardName = getCardName(config.key, idx);
             const card = document.createElement('div');
             card.className = `tarot-card-face ${config.color}`;
-            card.dataset.idx = i;
-            const rot = Math.random() * 4 - 2; 
-            card.style.transform = `rotate(${rot}deg)`;
+            card.dataset.idx = idx; 
+            card.dataset.name = cardName;
+            
+            // 이름 라벨 추가 (기본적으로는 보이지 않음)
+            const label = document.createElement('div');
+            label.className = 'card-name-label';
+            label.innerText = cardName;
+            card.appendChild(label);
+
             card.onclick = () => toggleTarotCard(card, config.key, config.pick);
             table.appendChild(card);
-        }
+        });
     }
 
     function toggleTarotCard(el, key, limit) {
         const list = gameState.selections[key];
+        // 카드 이름: el.dataset.name 이용 가능
+
         if(el.classList.contains('card-selected')) {
             el.classList.remove('card-selected');
-            const idx = list.indexOf(el.dataset.idx);
+            const idx = list.indexOf(el.dataset.name); // 이름으로 저장
             if(idx > -1) list.splice(idx, 1);
         } else {
             if(list.length >= limit) return alert(`이 단계에서는 ${limit}장까지만 선택할 수 있습니다.`);
             el.classList.add('card-selected');
-            list.push(el.dataset.idx);
+            list.push(el.dataset.name); // 이름으로 저장
         }
         updateTarotCount(list.length, limit);
         
@@ -431,11 +552,14 @@
         const prompt = `[현재 날짜: ${today}] 
         역할: 대나무 숲의 현자 '타로 판다'.
         질문: "${gameState.question}"
-        상황: 사용자가 웨이트 4장, 벨린 3장, 레노먼드 3장을 뽑았습니다.
+        선택된 카드들:
+        - 웨이트: ${gameState.selections.waite.join(', ')}
+        - 벨린: ${gameState.selections.belline.join(', ')}
+        - 레노먼드: ${gameState.selections.lenormand.join(', ')}
         
         말투: "~다 판다", "~한다 판다", 친근하고 신비로운 말투.
         형식 (Markdown):
-        1. **🎋 선택된 대나무 잎 (카드)**: (랜덤 카드명 나열)
+        1. **🎋 선택된 대나무 잎 (카드)**: (카드 이름과 의미 간단 언급)
         2. **🐼 판다의 해석**: (웨이트/벨린/레노먼드 종합 해석)
         3. **🎍 대나무 숲의 조언**: (핵심 조언)
         4. **📝 요약**: (인간을 위한 3줄 존댓말 요약)`;
