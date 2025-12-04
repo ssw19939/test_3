@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HG AI Agents - Zero Latency</title>
+    <title>HG AI Agents - Real Names</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -14,20 +14,14 @@
             --app-bg-saju: #fffdf5; 
             --text-panda: #673ab7; 
             --text-cat: #ff5252;
-            --gemini-blue: #4285f4;
         }
         body { background-color: #f0f4f9; margin: 0; overflow: hidden; font-family: 'Noto Sans KR', sans-serif; display: flex; justify-content: center; align-items: center; height: 100dvh; }
         .hidden { display: none !important; }
         
-        /* 앱 컨테이너 */
         .app-container { width: 100%; max-width: 600px; height: 100dvh; display: flex; flex-direction: column; position: relative; background: #fff; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.1); }
 
-        /* --- 1. 로그인 화면 --- */
-        #login-screen { 
-            position: absolute; inset: 0; z-index: 9999; 
-            background: linear-gradient(180deg, #ffffff 0%, #f0f4f9 100%);
-            display: flex; flex-direction: column; padding: 20px;
-        }
+        /* --- 로그인 화면 --- */
+        #login-screen { position: absolute; inset: 0; z-index: 9999; background: linear-gradient(180deg, #ffffff 0%, #f0f4f9 100%); display: flex; flex-direction: column; padding: 20px; }
         .gemini-header { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-bottom: 60px; }
         .gemini-logo { font-size: 2.5rem; font-weight: 500; background: linear-gradient(90deg, #4285f4, #9b72cb, #d96570); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
         .gemini-greeting { font-size: 2rem; font-weight: 500; color: #c4c7c5; line-height: 1.3; }
@@ -35,45 +29,38 @@
         .chat-input-area { background: #fff; border-radius: 30px; padding: 10px 20px; display: flex; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; margin-bottom: 20px; transition: all 0.3s; }
         .chat-input-area:focus-within { box-shadow: 0 4px 20px rgba(66, 133, 244, 0.2); border-color: #4285f4; }
         .chat-input { flex: 1; border: none; outline: none; font-size: 1rem; padding: 10px; color: #333; }
-        .chat-submit-btn { background: none; border: none; cursor: pointer; color: #4285f4; font-size: 1.2rem; padding: 5px; transition: transform 0.2s; }
-        .chat-submit-btn:hover { transform: scale(1.1); }
-        .version-tag { position: absolute; top: 20px; right: 20px; font-size: 0.75rem; color: #aaa; font-weight: bold; }
+        .chat-submit-btn { background: none; border: none; cursor: pointer; color: #4285f4; font-size: 1.2rem; padding: 5px; }
 
-        /* --- 2. 선택 화면 --- */
-        #selection-screen { position: absolute; inset: 0; background: #000; }
-        .split-panel { position: absolute; top: 0; bottom: 0; width: 100%; height: 100%; transition: clip-path 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s; cursor: pointer; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .panel-left { background: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%); clip-path: polygon(0 0, 60% 0, 40% 100%, 0 100%); z-index: 10; }
-        .panel-right { background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%); clip-path: polygon(60% 0, 100% 0, 100% 100%, 40% 100%); z-index: 10; }
-        .panel-left:hover { clip-path: polygon(0 0, 75% 0, 55% 100%, 0 100%); filter: brightness(1.1); z-index: 20; }
-        .panel-right:hover { clip-path: polygon(45% 0, 100% 0, 100% 100%, 25% 100%); filter: brightness(1.05); z-index: 20; }
-        
-        .char-img { width: 200px; height: 200px; object-fit: contain; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3)); animation: float 3s infinite ease-in-out; transition: 0.3s; background-color: transparent; }
+        /* --- 선택 화면 --- */
+        #selection-screen { position: absolute; inset: 0; background: #000; display: flex; overflow: hidden; }
+        .split-panel { position: relative; flex: 1; height: 100%; transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); cursor: pointer; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .panel-left { background: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%); z-index: 10; clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%); margin-right: -10%; }
+        .panel-right { background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%); z-index: 9; clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%); }
+        .panel-left:hover, .panel-right:hover { flex: 1.5; z-index: 20; filter: brightness(1.1); }
+        .panel-expanded { flex: 10 !important; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%) !important; z-index: 50 !important; margin: 0 !important; }
+        .panel-shrunk { flex: 0 !important; opacity: 0; }
+        .char-img { width: 200px; height: 200px; object-fit: contain; animation: float 3s infinite ease-in-out; pointer-events: none; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .panel-left:hover .char-img { transform: scale(1.1) rotate(-5deg); } .panel-right:hover .char-img { transform: scale(1.1) rotate(5deg); }
-        .title-badge { margin-top: 15px; padding: 8px 20px; border-radius: 12px; font-family: 'Black Han Sans', sans-serif; font-size: 2.5rem; background: rgba(255,255,255,0.95); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .title-badge { margin-top: 15px; padding: 8px 20px; border-radius: 12px; font-family: 'Black Han Sans', sans-serif; font-size: 2.5rem; background: rgba(255,255,255,0.95); box-shadow: 0 5px 15px rgba(0,0,0,0.2); pointer-events: none; }
         .panel-left .title-badge { color: var(--text-panda); border: 3px solid var(--text-panda); } .panel-right .title-badge { color: var(--text-cat); border: 3px solid var(--text-cat); }
 
-        /* --- 3. 앱 내부 공통 --- */
+        /* --- 앱 내부 공통 --- */
         .theme-tarot .app-container { background: var(--app-bg-tarot); } .theme-saju .app-container { background: var(--app-bg-saju); }
         #main-header { flex-shrink: 0; padding: 15px; display: flex; justify-content: space-between; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 50; transition: background 0.3s; }
         .action-btn { border-radius: 25px; padding: 12px; border: none; font-size: 1.1rem; font-family: 'Black Han Sans', sans-serif; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.2); transition: 0.1s; }
         .action-btn:active { transform: translateY(4px); box-shadow: none; }
-        @media (max-width: 768px) { .char-img { width: 140px; height: 140px; } .title-badge { font-size: 1.8rem; } .split-panel:hover { z-index: 10; clip-path: inherit; } .panel-left:hover { clip-path: polygon(0 0, 60% 0, 40% 100%, 0 100%); } .panel-right:hover { clip-path: polygon(60% 0, 100% 0, 100% 100%, 40% 100%); } }
 
-        /* --- 타로 카드 UI --- */
-        #tarot-card-table { display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 4px; padding: 10px; perspective: 1000px; overflow-y: auto; flex: 1; width: 100%; }
-        .tarot-card-face { width: 46px; height: 72px; background: radial-gradient(circle at center, #673ab7 0%, #311b92 100%); border: 1px solid #b39ddb; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 0.8rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; position: relative; overflow: hidden; }
+        /* --- 타로 선택 테이블 --- */
+        #tarot-card-table { display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 4px; padding: 10px 10px 80px 10px; perspective: 1000px; overflow-y: auto; flex: 1; width: 100%; }
+        .tarot-card-face { width: 46px; height: 72px; background: radial-gradient(circle at center, #673ab7 0%, #311b92 100%); border: 1px solid #b39ddb; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 0.8rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; }
         .deck-waite { background: radial-gradient(circle, #7e57c2 0%, #4527a0 100%); }
         .deck-belline { background: radial-gradient(circle, #1e88e5 0%, #0d47a1 100%); border-color: #90caf9; }
         .deck-lenormand { background: radial-gradient(circle, #8d6e63 0%, #4e342e 100%); border-color: #bcaaa4; }
         .tarot-card-face::after { content: '🎋'; opacity: 0.8; font-size: 1.2rem; }
-        
-        /* 카드 선택 효과 */
-        .card-selected { background: #fff !important; border-color: #ff6f00 !important; transform: translateY(-8px) scale(1.2) rotateY(180deg) !important; box-shadow: 0 10px 20px rgba(0,0,0,0.4) !important; z-index: 50; }
-        .card-selected::after { content: ''; } 
-        .card-selected::before { content: '✨'; font-size: 1.5rem; transform: rotateY(180deg); }
+        .card-selected { background: #fff !important; border-color: #ff6f00 !important; transform: translateY(-8px) scale(1.2) !important; box-shadow: 0 10px 20px rgba(0,0,0,0.4) !important; z-index: 50; }
+        .card-selected::after { content: '✔️'; }
 
-        /* 셔플 애니메이션 */
+        /* --- 셔플 --- */
         #tarot-shuffle-view { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
         .deck-stack { position: relative; width: 120px; height: 180px; }
         .deck-card { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #2e7d32; border: 4px solid #fff; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center; font-size: 3rem; }
@@ -83,43 +70,54 @@
         .shuffling .deck-card:nth-child(3) { animation: shuffleMove 0.5s infinite alternate 0.2s; }
         @keyframes shuffleMove { 0% { transform: translateX(0) rotate(0); } 25% { transform: translateX(-20px) rotate(-5deg); } 75% { transform: translateX(20px) rotate(5deg); } 100% { transform: translateX(0) rotate(0); } }
 
-        /* --- [NEW] 4-3-3 가챠(Gacha) 연출 스타일 --- */
+        /* --- ★ [핵심] 가챠 결과: 파란 배경 + 진짜 이름 --- */
         #gacha-modal { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; }
         
         .gacha-grid-433 {
             display: grid;
-            grid-template-columns: repeat(12, 1fr); /* 12 그리드 시스템 */
-            gap: 10px;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 12px;
             width: 95%; max-width: 400px;
-            perspective: 1000px;
+            margin-bottom: 20px;
         }
 
-        .reveal-card {
+        /* 사장님이 원하신 스타일: 진한 파랑 + 노란 테두리 + 명확한 텍스트 */
+        .text-card {
             aspect-ratio: 2/3;
-            position: relative;
-            transform-style: preserve-3d;
+            /* 진한 파랑/보라 그라데이션 */
+            background: linear-gradient(135deg, #311b92 0%, #4527a0 100%);
+            border: 2px solid #ffd700; /* 황금 테두리 */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center;
+            padding: 5px;
             opacity: 0;
-            transform: scale(0.5) translateY(50px);
+            transform: translateY(20px);
         }
+
+        .text-card:nth-child(1), .text-card:nth-child(2), .text-card:nth-child(3), .text-card:nth-child(4) { grid-column: span 3; }
+        .text-card:nth-child(5), .text-card:nth-child(6), .text-card:nth-child(7) { grid-column: span 4; }
+        .text-card:nth-child(8), .text-card:nth-child(9), .text-card:nth-child(10) { grid-column: span 4; }
+
+        .text-card.show { animation: popUp 0.5s forwards ease-out; }
+        @keyframes popUp {
+            0% { opacity: 0; transform: translateY(30px) scale(0.8); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .tc-deck { font-size: 0.6rem; color: #b39ddb; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+        .tc-icon { font-size: 1.8rem; margin-bottom: 5px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
         
-        /* 4-3-3 배치 로직 */
-        /* 첫 줄 4장: 3칸씩 차지 */
-        .reveal-card:nth-child(1), .reveal-card:nth-child(2), .reveal-card:nth-child(3), .reveal-card:nth-child(4) { grid-column: span 3; }
-        /* 둘째 줄 3장: 4칸씩 차지 */
-        .reveal-card:nth-child(5), .reveal-card:nth-child(6), .reveal-card:nth-child(7) { grid-column: span 4; }
-        /* 셋째 줄 3장: 4칸씩 차지 */
-        .reveal-card:nth-child(8), .reveal-card:nth-child(9), .reveal-card:nth-child(10) { grid-column: span 4; }
-
-        .reveal-card.animate { animation: popAndFlip 0.8s forwards ease-out; }
-        @keyframes popAndFlip {
-            0% { opacity: 0; transform: scale(0.5) translateY(50px) rotateY(0deg); }
-            50% { opacity: 1; transform: scale(1.1) translateY(0) rotateY(0deg); }
-            100% { opacity: 1; transform: scale(1) translateY(0) rotateY(180deg); }
+        /* ★ 진짜 이름이 들어갈 곳 */
+        .tc-name { 
+            font-family: 'Black Han Sans', sans-serif; 
+            font-size: 1rem; 
+            color: #fff; 
+            line-height: 1.1; 
+            word-break: keep-all; 
+            text-shadow: 0 2px 2px rgba(0,0,0,0.8);
         }
-
-        .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(255,255,255,0.3); }
-        .face.back { background: repeating-linear-gradient(45deg, #2c3e50, #2c3e50 5px, #34495e 5px, #34495e 10px); border: 2px solid #fff; }
-        .face.front { background-color: white; color: #333; transform: rotateY(180deg); border: 2px solid #ffd700; overflow: hidden; padding: 2px; }
 
         /* Markdown Style */
         .markdown-body h1, .markdown-body h2 { color: #333; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
@@ -132,7 +130,9 @@
 <div class="app-container">
 
     <div id="gacha-modal" class="hidden">
-        <h2 id="gacha-title" class="text-white text-2xl font-[Black Han Sans] mb-6 animate-pulse">운명의 흐름을 읽는 중...</h2>
+        <h2 id="gacha-title" class="text-white text-xl font-[Black Han Sans] mb-6 text-center animate-pulse">
+            <span class="text-yellow-400">✨ 운명의 선택 ✨</span>
+        </h2>
         
         <div class="gacha-grid-433 hidden" id="gacha-reveal-area-tarot"></div>
         
@@ -145,13 +145,13 @@
              <div id="saju-calc-msg" class="text-yellow-300 mt-8 text-xl font-bold animate-bounce">만세력 계산 중...</div>
         </div>
 
-        <button id="gacha-finish-btn" class="action-btn bg-yellow-500 text-black font-bold mt-10 opacity-0 transition-opacity duration-500 px-8 shadow-xl hover:scale-105 transform">
-            ✨ 결과 확인하기
+        <button id="gacha-finish-btn" class="action-btn bg-yellow-500 text-black font-bold mt-4 opacity-0 transition-opacity duration-500 px-8 shadow-xl hover:scale-105 transform">
+            🔮 해석 결과 보기
         </button>
     </div>
 
     <div id="login-screen">
-        <div class="version-tag">HG Agent v2.0 (Zero-Latency)</div>
+        <div class="version-tag">HG Agent v2.5 (Real Names)</div>
         <div class="gemini-header">
             <div class="gemini-logo">HG AI Agent</div>
             <div class="gemini-greeting">
@@ -167,11 +167,11 @@
     </div>
 
     <div id="selection-screen" class="hidden">
-        <div class="split-panel panel-left" onclick="selectMode('tarot')">
+        <div id="panel-tarot" class="split-panel panel-left" onclick="selectMode('tarot')">
             <img id="intro-panda-img" src="./panda.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3069/3069172.png'" class="char-img">
             <div class="title-badge">타로 판다</div>
         </div>
-        <div class="split-panel panel-right" onclick="selectMode('saju')">
+        <div id="panel-saju" class="split-panel panel-right" onclick="selectMode('saju')">
             <img id="intro-cat-img" src="./cat.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/616/616430.png'" class="char-img">
             <div class="title-badge">무속 냥이</div>
         </div>
@@ -210,7 +210,7 @@
                     <div id="tarot-selection-count" class="font-bold text-green-800 text-sm mt-1">0 / 0</div>
                 </div>
                 <div id="tarot-card-table"></div>
-                <div class="p-3 bg-white border-t border-gray-200 z-10 flex-shrink-0">
+                <div class="p-3 bg-white border-t border-gray-200 z-10 flex-shrink-0 absolute bottom-0 w-full shadow-lg">
                     <button id="tarot-next-btn" class="action-btn bg-green-600 text-white w-full hidden shadow-lg" onclick="confirmTarotSelection()">다음 단계</button>
                     <div id="tarot-guide-msg" class="text-center text-gray-400 text-xs font-bold py-3">카드를 모두 선택하면 버튼이 나타납니다.</div>
                 </div>
@@ -222,7 +222,6 @@
                 <img id="saju-mascot" src="./cat.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/616/616430.png'" class="w-28 h-28 rounded-full border-4 border-red-400 mb-4 bg-white object-cover shadow-lg">
                 <h2 id="saju-title" class="text-2xl font-bold text-red-900 mb-2 font-[Black Han Sans]">한방에 해결한다냥!</h2>
                 <p id="saju-subtitle" class="text-red-700 mb-6 text-sm">생년월일과 고민을 한 번에 말해보라냥.</p>
-                
                 <div class="w-full bg-white p-5 rounded-xl border-2 border-red-200 space-y-3 shadow-lg">
                     <div class="flex gap-2">
                         <div class="flex-1"><label class="block text-xs font-bold text-left ml-1 mb-1 text-red-800">📅 생년월일</label><input type="date" id="saju-date" class="w-full p-2 border border-red-200 rounded-lg text-center font-bold text-gray-700 bg-red-50" value="2000-01-01"></div>
@@ -238,7 +237,6 @@
                     <button class="action-btn bg-red-500 text-white w-full mt-2 shadow-lg hover:bg-red-600" onclick="startSajuFlow()">🔥 운세 확인하기</button>
                 </div>
             </div>
-
             <div id="saju-view-result-check" class="hidden h-full flex flex-col items-center justify-center">
                  <div class="bg-white p-6 rounded-2xl border-2 border-red-800 text-center shadow-xl w-full">
                     <div class="text-sm bg-red-800 text-white inline-block px-4 py-1 rounded-full mb-4">당신의 타고난 팔자</div>
@@ -321,7 +319,6 @@
     let userApiKey = null; 
     let currentModelMode = 'fast'; 
 
-    // ★ Optimistic UI를 위한 Promise 변수 (백그라운드 실행 저장용) ★
     let tarotPredictionPromise = null;
     let sajuMansePromise = null;
     let sajuFinalPromise = null;
@@ -336,21 +333,33 @@
         if(dbTarot) loadConfig('tarot', true); if(dbSaju) loadConfig('saju', true);
     };
 
-    // --- Selection ---
+    // --- Selection (Zoom Animation) ---
     window.selectMode = (mode) => {
-        currentMode = mode;
-        const mainUI = document.getElementById('main-app-ui');
-        document.getElementById('selection-screen').classList.add('hidden');
-        mainUI.classList.remove('hidden');
-        document.body.className = ''; document.body.classList.add(`theme-${mode}`);
-        document.getElementById('main-header').style.background = mode === 'tarot' ? '#2e7d32' : '#c62828';
-
-        document.getElementById('tarot-app').classList.add('hidden');
-        document.getElementById('saju-app').classList.add('hidden');
-        document.getElementById(`${mode}-app`).classList.remove('hidden');
+        const leftPanel = document.getElementById('panel-tarot');
+        const rightPanel = document.getElementById('panel-saju');
         
-        showView(`${mode}-view-start`);
-        loadConfig(mode);
+        if(mode === 'tarot') { leftPanel.classList.add('panel-expanded'); rightPanel.classList.add('panel-shrunk'); } 
+        else { rightPanel.classList.add('panel-expanded'); leftPanel.classList.add('panel-shrunk'); }
+
+        setTimeout(() => {
+            currentMode = mode;
+            document.getElementById('selection-screen').classList.add('hidden');
+            document.getElementById('main-app-ui').classList.remove('hidden');
+            document.body.className = ''; document.body.classList.add(`theme-${mode}`);
+            document.getElementById('main-header').style.background = mode === 'tarot' ? '#2e7d32' : '#c62828';
+
+            document.getElementById('tarot-app').classList.add('hidden');
+            document.getElementById('saju-app').classList.add('hidden');
+            document.getElementById(`${mode}-app`).classList.remove('hidden');
+            
+            showView(`${mode}-view-start`);
+            loadConfig(mode);
+            
+            setTimeout(() => {
+                leftPanel.classList.remove('panel-expanded', 'panel-shrunk');
+                rightPanel.classList.remove('panel-expanded', 'panel-shrunk');
+            }, 500);
+        }, 600);
     };
 
     window.goHome = () => {
@@ -376,7 +385,6 @@
         showView(`${currentMode}-view-start`); 
     };
 
-    // --- API Call ---
     async function callGemini(prompt, isJson = false) {
         if (!userApiKey) { alert("세션 만료."); location.reload(); return; }
         let modelName = 'gemini-2.0-flash-exp'; 
@@ -392,14 +400,26 @@
         } catch (e) { console.error(e); throw e; }
     }
 
-    // =========================================================================
-    // [Tarot Logic] - 4-3-3 Layout & Zero Latency
-    // =========================================================================
+    // --- ★ [핵심 수정] 실제 카드 이름 매핑 데이터 ---
+    const WAITE_MAJORS = ["The Fool", "The Magician", "The High Priestess", "The Empress", "The Emperor", "The Hierophant", "The Lovers", "The Chariot", "Strength", "The Hermit", "Wheel of Fortune", "Justice", "The Hanged Man", "Death", "Temperance", "The Devil", "The Tower", "The Star", "The Moon", "The Sun", "Judgement", "The World"];
+    const WAITE_SUITS = ["Wands", "Cups", "Swords", "Pentacles"];
+    const WAITE_RANKS = ["Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Page", "Knight", "Queen", "King"];
     
-    // 카드 이름 매핑 (간소화)
+    const BELLINE_NAMES = ["Destiny", "The Star of Man", "The Star of Woman", "The Nativity", "Success", "Elevation", "Honors", "Thought", "Countryside", "Presents", "Treachery", "Departure", "Inconstancy", "Discovery", "Water", " The Penates", "Malady", "Change", "Money", "Intelligence", "Theft", "Enterprise", "Traffic", "News", "Pleasure", "Peace", "Union", "Family", "Amor", "Table", "Passions", "Wickedness", "Lawsuit", "Despotism", "Enemies", "Negotiations", "Fire", "Accident", "Support", "Beauty", "Inheritance", "Wisdom", "Fame", "Hazard", "Happiness", "Misfortune", "Sterility", "Fatalism", "Grace", "Ruins", "Delay", "Cloister", "The Blue Monkey"];
+
+    const LENORMAND_NAMES = ["Rider", "Clover", "Ship", "House", "Tree", "Clouds", "Snake", "Coffin", "Bouquet", "Scythe", "Whip", "Birds", "Child", "Fox", "Bear", "Stars", "Stork", "Dog", "Tower", "Garden", "Mountain", "Crossroads", "Mice", "Heart", "Ring", "Book", "Letter", "Man", "Woman", "Lily", "Sun", "Moon", "Key", "Fish", "Anchor", "Cross"];
+
     function getCardName(deckKey, idx) {
-        if(deckKey === 'waite') return idx < 22 ? `Major #${idx}` : `Minor #${idx-22}`;
-        return `${deckKey} #${idx+1}`;
+        if(deckKey === 'waite') {
+            if(idx < 22) return WAITE_MAJORS[idx];
+            const minorIdx = idx - 22;
+            const suit = WAITE_SUITS[Math.floor(minorIdx / 14)];
+            const rank = WAITE_RANKS[minorIdx % 14];
+            return `${rank} of ${suit}`;
+        }
+        else if(deckKey === 'belline') return BELLINE_NAMES[idx] || `Belline #${idx+1}`;
+        else if(deckKey === 'lenormand') return LENORMAND_NAMES[idx] || `Lenormand #${idx+1}`;
+        return `Card #${idx + 1}`;
     }
 
     const TAROT_STAGES = [
@@ -418,21 +438,11 @@
 
     function startTarotStage(idx) {
         gameState.stage = idx;
-        
-        // ★ 모든 카드 선택 완료 시: AI 호출과 연출 동시 시작 ★
-        if(idx >= TAROT_STAGES.length) { 
-            triggerTarotOptimisticProcess();
-            return; 
-        }
-        
+        if(idx >= TAROT_STAGES.length) { triggerTarotOptimisticProcess(); return; }
         const config = TAROT_STAGES[idx];
         showView('tarot-shuffle-view');
         document.getElementById('shuffle-text').innerText = `${config.name} 섞는 중...`;
-        
-        setTimeout(() => {
-            showView('tarot-view-game');
-            setupCardTable(config);
-        }, 1500); 
+        setTimeout(() => { showView('tarot-view-game'); setupCardTable(config); }, 1500); 
     }
 
     function setupCardTable(config) {
@@ -445,8 +455,10 @@
         const table = document.getElementById('tarot-card-table');
         table.innerHTML = "";
         
-        // 랜덤 카드 생성 (간략화)
-        let indices = Array.from({length: 30}, (_, i) => i); 
+        const totalCards = config.count;
+        let indices = Array.from({length: totalCards}, (_, i) => i);
+        for (let i = indices.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [indices[i], indices[j]] = [indices[j], indices[i]]; }
+        
         indices.forEach(idx => {
             const cardName = getCardName(config.key, idx);
             const card = document.createElement('div');
@@ -481,37 +493,30 @@
     function updateTarotCount(c, m) { document.getElementById('tarot-selection-count').innerText = `${c} / ${m}`; }
     window.confirmTarotSelection = () => startTarotStage(gameState.stage + 1);
 
-    // [핵심] 백그라운드 AI 요청 + 화면 가챠 연출
     window.triggerTarotOptimisticProcess = () => {
-        // 1. Backend: AI 요청 즉시 시작 (await 하지 않고 변수에 저장)
         const prompt = `질문:"${gameState.question}". 카드:${JSON.stringify(gameState.selections)}. 타로 리딩해줘. 형식: 1.카드의미 2.해석 3.조언 4.요약. 말투: "~다 판다"`;
         tarotPredictionPromise = callGemini(prompt).then(text => {
              if(dbTarot) addDoc(collection(dbTarot, "tarot_readings"), { question: gameState.question, response: text, timestamp: new Date() });
              return text;
         });
-
-        // 2. Frontend: 가챠 연출 시작
         showTarotGachaReveal();
     }
 
+    // ★ [핵심] 가챠 결과: 텍스트로 명확하게 보여주기 (첫번째 이미지 스타일)
     window.showTarotGachaReveal = () => {
         const modal = document.getElementById('gacha-modal');
         const grid = document.getElementById('gacha-reveal-area-tarot');
         const sajuArea = document.getElementById('gacha-reveal-area-saju');
         const btn = document.getElementById('gacha-finish-btn');
-        const title = document.getElementById('gacha-title');
         
-        // 초기화
         grid.innerHTML = '';
-        grid.className = 'gacha-grid-433'; // Grid 스타일 적용
+        grid.className = 'gacha-grid-433';
         grid.classList.remove('hidden');
         sajuArea.classList.add('hidden');
         btn.style.opacity = '0';
-        btn.onclick = finishTarotAndShow; // 버튼 클릭 시 동작 연결
-        title.innerText = "운명의 카드 배열 (4-3-3)";
+        btn.onclick = finishTarotAndShow;
         modal.classList.remove('hidden');
 
-        // 카드 수집 (순서대로 4, 3, 3)
         const allCards = [
             ...gameState.selections.waite.map(n=>({n, t:'Waite'})),
             ...gameState.selections.belline.map(n=>({n, t:'Belline'})),
@@ -520,31 +525,25 @@
 
         allCards.forEach((card, i) => {
             const cardWrap = document.createElement('div');
-            cardWrap.className = 'reveal-card';
+            cardWrap.className = 'text-card'; // 디자인된 카드 클래스
+            
+            // 이미지와 동일한 스타일 (덱 종류 + 아이콘 + 진짜 이름)
             cardWrap.innerHTML = `
-                <div class="face back">?</div>
-                <div class="face front">
-                    <div style="font-size:20px; margin-bottom:2px;">🔮</div>
-                    <div style="font-size:8px; font-weight:bold;">${card.t}</div>
-                    <div style="font-size:10px; line-height:1.1;">${card.n}</div>
-                </div>
+                <div class="tc-icon">🔮</div>
+                <div class="tc-deck">${card.t}</div>
+                <div class="tc-name">${card.n}</div>
             `;
             grid.appendChild(cardWrap);
-            // 순차 애니메이션 (0.4초 간격)
-            setTimeout(() => cardWrap.classList.add('animate'), i * 400);
+            setTimeout(() => cardWrap.classList.add('show'), i * 200);
         });
 
-        // 애니메이션이 얼추 끝날 때 쯤 버튼 등장
-        setTimeout(() => { btn.style.opacity = '1'; }, allCards.length * 400 + 500);
+        setTimeout(() => { btn.style.opacity = '1'; }, allCards.length * 200 + 300);
     }
 
-    // 결과 확인 버튼 클릭 시 (로딩 없이 즉시 뜸)
     window.finishTarotAndShow = async () => {
         const btn = document.getElementById('gacha-finish-btn');
         btn.innerText = "해석 불러오는 중...";
-        
         try {
-            // 이미 백그라운드에서 완료되었을 확률 99%
             const text = await tarotPredictionPromise; 
             document.getElementById('gacha-modal').classList.add('hidden');
             displayResult(gameState.question, text);
@@ -554,42 +553,20 @@
         }
     }
 
-    // =========================================================================
-    // [Saju Logic] - Integrated Flow & Zero Latency
-    // =========================================================================
-    
+    // --- Saju Logic ---
     window.startSajuFlow = async () => {
         const q = document.getElementById('saju-input').value;
         if(!q) return alert("고민을 입력해주세요!");
-        
         sajuState.question = q;
-        sajuState.info = { 
-            date: document.getElementById('saju-date').value, 
-            time: document.getElementById('saju-time').value, 
-            gender: document.getElementById('saju-gender').value 
-        };
+        sajuState.info = { date: document.getElementById('saju-date').value, time: document.getElementById('saju-time').value, gender: document.getElementById('saju-gender').value };
 
-        // 1. Frontend: 가챠 연출 시작 (사주 버전)
         showSajuGachaReveal();
-
-        // 2. Backend (Parallel): 만세력 계산 시작
         const mansePrompt = `역할:무속인. 정보:${JSON.stringify(sajuState.info)}. JSON출력:{"pillars":["시","일","월","년"],"colors":["wood","fire","earth","metal","water"],"brief":"${q}에 대한 사주 한줄평"}`;
-        
-        // 만세력 Promise 저장
         sajuMansePromise = callGemini(mansePrompt, true);
-        
-        // ★ 중요: 만세력 결과가 오면 -> 바로 최종 해석 요청을 '이어서' 보냄 (체이닝)
-        // 사용자가 만세력을 보고 있는 동안 최종 해석이 돌아감.
         sajuFinalPromise = sajuMansePromise.then(jsonStr => {
             const data = JSON.parse(jsonStr);
-            sajuState.pillars = data.pillars; // 데이터 저장
-            
-            // 만세력 결과를 UI에 반영 (하지만 화면은 아직 가챠 중일 수 있음)
-            // 가챠 함수에서 await sajuMansePromise를 해서 타이밍을 맞출 것임.
-
-            // 여기서 바로 최종 해석 요청!
+            sajuState.pillars = data.pillars;
             const finalPrompt = `사주팔자:${data.pillars.join(',')}. 질문:"${q}". 위 사주를 바탕으로 무속인 고양이 말투로 상세 답변해줘.`;
-            
             const finalReq = callGemini(finalPrompt).then(text => {
                  if(dbSaju) addDoc(collection(dbSaju, "saju_history"), { question: q, answer: text, date: new Date().toISOString() });
                  return text;
@@ -603,34 +580,24 @@
         const grid = document.getElementById('gacha-reveal-area-tarot');
         const sajuArea = document.getElementById('gacha-reveal-area-saju');
         const btn = document.getElementById('gacha-finish-btn');
-        const title = document.getElementById('gacha-title');
-        const msg = document.getElementById('saju-calc-msg');
-
         grid.classList.add('hidden');
         sajuArea.classList.remove('hidden');
         btn.style.opacity = '0';
-        btn.onclick = null; // 여기선 버튼 안씀 (자동 전환)
-        title.innerText = "사주 명식을 뽑는 중이다냥!";
-        msg.innerText = "만세력 계산 중...";
+        btn.onclick = null; 
         modal.classList.remove('hidden');
 
         try {
-            // 1. 만세력(1차)이 완료될 때까지 연출 보여줌 (최소 2초 유지)
             await new Promise(r => setTimeout(r, 2000));
-            const { manseData } = await sajuFinalPromise; // 만세력 완료 대기
+            const { manseData } = await sajuFinalPromise; 
 
-            // 2. 만세력 완료되면 모달 닫고 '중간 결과 화면' 보여줌
             modal.classList.add('hidden');
-            
-            // 중간 결과 UI 업데이트
             const cont = document.getElementById('saju-pillars-result'); 
             cont.innerHTML = "";
             manseData.pillars.forEach((p, i) => { 
                 cont.innerHTML += `<div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold ${manseData.colors[i] || 'earth'}">${p}</div>`; 
             });
             document.getElementById('saju-brief-msg').innerText = manseData.brief;
-            
-            showView('saju-view-result-check'); // 중간 화면 노출
+            showView('saju-view-result-check'); 
 
         } catch (e) {
             alert("오류 발생: " + e.message);
@@ -638,19 +605,16 @@
         }
     }
 
-    // 최종 결과 보기 버튼 (이미 로딩되어 있을 것임)
     window.showSajuFinalResult = async () => {
         const btn = document.getElementById('saju-final-btn');
         btn.innerText = "고양이가 답변을 가져오는 중...";
-        
         try {
             const { finalReq } = await sajuFinalPromise;
-            const text = await finalReq; // 여기서 최종 텍스트 대기 (거의 즉시)
+            const text = await finalReq;
             displayResult(sajuState.question, text);
         } catch(e) { alert("AI 오류"); }
     }
 
-    // --- Common ---
     function displayResult(q, t) {
         document.getElementById('result-question').innerText = q;
         document.getElementById('result-content').innerHTML = marked.parse(t);
@@ -658,17 +622,15 @@
     }
     window.copyResult = () => navigator.clipboard.writeText(document.getElementById('result-content').innerText).then(()=>alert("복사완료"));
 
-    // --- History & Admin (Previous Logic kept simple) ---
+    // --- History & Admin ---
     window.openHistory = async () => {
         const listEl = document.getElementById('history-list');
         document.getElementById('common-view-history').classList.remove('hidden');
         listEl.innerHTML = "로딩 중...";
         if(!dbTarot) return listEl.innerHTML = "DB 미연결";
-        
         const db = currentMode === 'tarot' ? dbTarot : dbSaju;
         const col = currentMode === 'tarot' ? 'tarot_readings' : 'saju_history';
         const field = currentMode === 'tarot' ? 'timestamp' : 'date';
-
         try {
             const q = query(collection(db, col), orderBy(field, "desc"), limit(20));
             const snap = await getDocs(q);
@@ -684,16 +646,13 @@
         } catch(e) {}
     };
 
-    // --- Admin Settings ---
     window.checkAdmin = () => { if(prompt("관리자 암호")==="5690") document.getElementById('admin-modal').classList.remove('hidden'); };
     window.saveAdmin = async () => { alert("저장됨(데모)"); document.getElementById('admin-modal').classList.add('hidden'); };
     async function loadConfig(m, h) { /* Config Loading Logic */ }
 
-    // Dynamic Style for Saju Colors
     const style = document.createElement('style');
     style.innerHTML = `.wood{background:#2e7d32}.fire{background:#d32f2f}.earth{background:#fbc02d;color:#3e2723}.metal{background:#757575}.water{background:#212121}`;
     document.head.appendChild(style);
-
 </script>
 </body>
 </html>
