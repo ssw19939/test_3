@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HG AI Agents - Premium</title>
+    <title>HG AI Agents - Premium (Fixed)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Montserrat:wght@800&family=Pretendard:wght@300;500;700&display=swap" rel="stylesheet">
@@ -102,7 +102,7 @@
 <div class="app-container">
 
     <div id="login-screen">
-        <div class="version-label">v3.0.5</div>
+        <div class="version-label">v3.0.5 (Fixed)</div>
         <div class="login-greeting">
             안녕하세요,<br>
             <span>HG AI Agents</span>에<br>
@@ -270,15 +270,30 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Firebase (사용자 제공 Original Keys)
-    const tarotConfig = { apiKey: "AIzaSyDuQDOi5wxabpqdqu-CJfdR-krk5Q08tBA", projectId: "test-9da10", appId: "1:578765851412:web:5d9d30e09f8427d1a49001" };
-    const sajuConfig = { apiKey: "AIzaSyB-y3inMOTdj48gwlh0eftUc_YfyNTeJmc", projectId: "sajutest-e4eaa", appId: "1:753725539148:web:f2d67dd6b3adf6514345e9" };
-    
-    let dbTarot, dbSaju;
+    // ─────────────────────────────────────────────────────────────
+    // [중요] 여기에 본인의 Firebase 설정값을 붙여넣으세요.
+    // 기존에 복잡하게 2개로 나뉘었던 설정을 하나로 통합했습니다.
+    // ─────────────────────────────────────────────────────────────
+    const firebaseConfig = {
+        apiKey: "여기에_API_KEY",
+        authDomain: "여기에_AUTH_DOMAIN",
+        projectId: "여기에_PROJECT_ID",
+        storageBucket: "여기에_STORAGE_BUCKET",
+        messagingSenderId: "여기에_SENDER_ID",
+        appId: "여기에_APP_ID"
+    };
+
+    // Firebase 초기화 (단일 DB 연결로 통합)
+    let app, db;
     try {
-        const appTarot = initializeApp(tarotConfig, "tarotApp"); dbTarot = getFirestore(appTarot);
-        const appSaju = initializeApp(sajuConfig, "sajuApp"); dbSaju = getFirestore(appSaju);
-    } catch(e) { console.error("Firebase Init Error:", e); }
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        console.log("Firebase DB Connected Successfully");
+    } catch(e) { 
+        console.error("Firebase Init Error:", e);
+        // 설정값이 비어있을 경우 알림
+        if(e.code === 'app/no-app') alert("Firebase 설정값이 입력되지 않았습니다. 코드를 확인해주세요.");
+    }
 
     let currentMode = null; 
     let userApiKey = null; 
@@ -315,6 +330,8 @@
             if(mode === 'tarot') header.style.background = '#2e7d32';
             else if(mode === 'saju') header.style.background = '#c62828';
             else header.style.background = '#1565c0';
+
+            document.getElementById('history-btn').classList.remove('hidden');
 
             ['tarot-app', 'saju-app', 'owl-app'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(`${mode}-app`).classList.remove('hidden');
@@ -381,10 +398,10 @@
         setTimeout(() => { showView('tarot-view-game'); setupTarotTable(TAROT_STAGES[idx]); }, 800);
     }
     
-    // [SHUFFLE LOGIC]
     function setupTarotTable(config) {
         document.getElementById('tarot-stage-info').innerText = `${config.name} (${config.pick}장 선택)`;
-        const table = document.getElementById('tarot-card-table'); table.innerHTML = "";
+        const table = document.getElementById('tarot-card-table'); 
+        table.innerHTML = "";
 
         let deck = Array.from({length: config.count}, (_, i) => i);
         for (let i = deck.length - 1; i > 0; i--) {
@@ -423,7 +440,8 @@
         
         try {
             const text = await callGemini(prompt); displayResult(gameState.question, text);
-            if(dbTarot) addDoc(collection(dbTarot, "tarot_readings"), { question: gameState.question, response: text, timestamp: new Date() });
+            // 통합된 db 사용
+            if(db) addDoc(collection(db, "tarot_readings"), { question: gameState.question, response: text, timestamp: new Date() });
         } catch(e) { alert("오류: "+e.message); resetCurrentMode(); }
     }
 
@@ -439,7 +457,8 @@
         
         try {
             const text = await callGemini(prompt); displayResult(q, text);
-            if(dbSaju) await addDoc(collection(dbSaju, "saju_history"), { question: q, answer: text, date: new Date().toISOString() });
+            // 통합된 db 사용
+            if(db) await addDoc(collection(db, "saju_history"), { question: q, answer: text, date: new Date().toISOString() });
         } catch(e) { alert("오류: "+e.message); resetCurrentMode(); }
     };
 
@@ -484,8 +503,8 @@
         try {
             const text = await callGemini(prompt, false, base64); 
             displayResult("[ 🦉 뷰엉이 분석 리포트 ]", text);
-            // 뷰엉이 기록 저장 (타로DB 공유)
-            if(dbTarot) await addDoc(collection(dbTarot, "owl_readings"), { question: "관상 분석", response: text, timestamp: new Date() });
+            // 통합된 db 사용
+            if(db) await addDoc(collection(db, "owl_readings"), { question: "관상 분석", response: text, timestamp: new Date() });
         } catch(e) { alert("분석 실패: " + e.message); resetCurrentMode(); }
     }
 
@@ -495,28 +514,21 @@
         document.getElementById('common-view-result').classList.remove('hidden');
     }
     
-    // --- History Loading Logic (Updated) ---
+    // --- History Loading Logic (Unified) ---
     window.openHistory = async () => {
         document.getElementById('common-view-history').classList.remove('hidden');
         const listEl = document.getElementById('history-list');
         listEl.innerHTML = "<div class='text-center text-gray-500'>데이터 로딩 중...</div>";
 
-        let db, col, field;
-        if (currentMode === 'tarot') { 
-            db = dbTarot; col = 'tarot_readings'; field = 'timestamp'; 
-        } else if (currentMode === 'saju') { 
-            db = dbSaju; col = 'saju_history'; field = 'date'; 
-        } else { 
-            db = dbTarot; col = 'owl_readings'; field = 'timestamp'; 
-        }
+        if(!db) { listEl.innerHTML = "<div class='text-center text-red-500'>DB 연결 안됨 (Config 확인 필요)</div>"; return; }
 
-        // DB 개별 체크
-        if (!db) {
-            listEl.innerHTML = `<div class='text-center text-red-500'>${currentMode === 'saju' ? '사주' : '타로/뷰엉이'} DB 연결 실패</div>`;
-            return;
-        }
+        let col, field;
+        if (currentMode === 'tarot') { col = 'tarot_readings'; field = 'timestamp'; }
+        else if (currentMode === 'saju') { col = 'saju_history'; field = 'date'; }
+        else { col = 'owl_readings'; field = 'timestamp'; } 
 
         try {
+            // 통합된 db 변수 하나만 사용
             const qRef = query(collection(db, col), orderBy(field, "desc"), limit(20));
             const snap = await getDocs(qRef);
             listEl.innerHTML = "";
@@ -529,14 +541,14 @@
             snap.forEach(d => {
                 const data = d.data();
                 const div = document.createElement('div');
-                div.className = "bg-white p-4 rounded-lg shadow-sm flex justify-between items-center text-left cursor-pointer hover:bg-green-50 transition border border-gray-100";
-                div.onclick = () => displayResult(data.question, data.response || data.answer);
-                div.innerHTML = `<span class="truncate font-bold text-gray-700 w-full text-sm">Q. ${data.question}</span>`;
+                div.className = "bg-white p-4 rounded-lg shadow-sm flex justify-between items-center text-left cursor-pointer hover:bg-gray-50 transition border border-gray-100";
+                div.onclick = () => displayResult(data.question || "관상 분석", data.response || data.answer);
+                div.innerHTML = `<span class="truncate font-bold text-gray-700 w-full text-sm">Q. ${data.question || "관상 분석"}</span>`;
                 listEl.appendChild(div);
             });
         } catch(e) {
             console.error(e);
-            listEl.innerHTML = "<div class='text-center text-red-500'>기록을 불러오지 못했습니다.</div>";
+            listEl.innerHTML = `<div class='text-center text-red-500'>기록을 불러오지 못했습니다.<br><small>${e.message}</small></div>`;
         }
     }
 </script>
