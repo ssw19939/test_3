@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HG AI Agents - 한미글로벌 AI</title>
+    <title>HG AI Agents - Final Fix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Montserrat:wght@800&family=Pretendard:wght@300;500;700&display=swap" rel="stylesheet">
@@ -95,6 +95,11 @@
         #tarot-card-table { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; padding: 10px; }
         .tarot-card { width: 50px; height: 80px; background: linear-gradient(135deg, #4a148c, #311b92); border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); cursor: pointer; transition: 0.2s; flex-shrink: 0; }
         .tarot-card.selected { transform: translateY(-10px) scale(1.1); border-color: #ffd700; box-shadow: 0 5px 15px rgba(0,0,0,0.3); background: #fff; }
+
+        /* [수정됨] 결과창의 z-index를 높여서 확실히 위로 뜨게 함 */
+        #common-view-result { z-index: 9999 !important; }
+        /* [수정됨] 기록창의 z-index를 결과창보다 낮춤 */
+        #common-view-history { z-index: 5000 !important; }
     </style>
 </head>
 <body>
@@ -102,7 +107,7 @@
 <div class="app-container">
 
     <div id="login-screen">
-        <div class="version-label">v3.1.0</div>
+        <div class="version-label">v3.1.1 (Popup Fixed)</div>
         <div class="login-greeting">
             안녕하세요,<br>
             <span>HG AI Agents</span>에<br>
@@ -270,9 +275,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, query, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // ─────────────────────────────────────────────────────────────
-    // [완료] 전달해주신 toytest 프로젝트 설정으로 통합했습니다.
-    // ─────────────────────────────────────────────────────────────
     const firebaseConfig = {
         apiKey: "AIzaSyDCgUbvYdDg6IuTCcE-rwykguSnPtO1jJw",
         authDomain: "toytest-450ee.firebaseapp.com",
@@ -507,7 +509,8 @@
 
     function displayResult(q, text) {
         document.getElementById('result-question').innerText = q;
-        document.getElementById('result-content').innerHTML = marked.parse(text);
+        // [수정] text가 없을 경우 대비
+        document.getElementById('result-content').innerHTML = marked.parse(text || "내용을 불러올 수 없습니다.");
         document.getElementById('common-view-result').classList.remove('hidden');
     }
     
@@ -525,7 +528,6 @@
         else col = 'owl_readings'; 
 
         try {
-            // DB에서 30개만 가져오고 (정렬 없이) -> JS에서 정렬 (오류 방지)
             const qRef = query(collection(db, col), limit(30)); 
             const snap = await getDocs(qRef);
             
@@ -537,7 +539,6 @@
             let docs = [];
             snap.forEach(d => docs.push(d.data()));
 
-            // 통합 정렬 (String Date & Timestamp Object 모두 처리)
             docs.sort((a, b) => {
                 const timeA = a.date ? new Date(a.date).getTime() : (a.timestamp ? a.timestamp.seconds * 1000 : 0);
                 const timeB = b.date ? new Date(b.date).getTime() : (b.timestamp ? b.timestamp.seconds * 1000 : 0);
@@ -548,7 +549,13 @@
             docs.forEach(data => {
                 const div = document.createElement('div');
                 div.className = "bg-white p-4 rounded-lg shadow-sm flex justify-between items-center text-left cursor-pointer hover:bg-gray-50 transition border border-gray-100";
-                div.onclick = () => displayResult(data.question || "관상 분석", data.response || data.answer);
+                
+                // [수정됨] 클릭 시 상세내용 표시하고 + 기록창 닫기! (핵심)
+                div.onclick = () => {
+                    displayResult(data.question || "관상 분석", data.response || data.answer);
+                    document.getElementById('common-view-history').classList.add('hidden'); // 기록창 닫기
+                };
+                
                 div.innerHTML = `<span class="truncate font-bold text-gray-700 w-full text-sm">Q. ${data.question || "관상 분석"}</span>`;
                 listEl.appendChild(div);
             });
@@ -561,4 +568,3 @@
 </script>
 </body>
 </html>
-
