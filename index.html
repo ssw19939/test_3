@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Montserrat:wght@800&family=Pretendard:wght@300;500;700&display=swap" rel="stylesheet">
     
     <style>
-        /* 기본 설정 (모던 스타일 복구) */
+        /* 기본 설정 */
         :root {
             --primary-panda: #2e7d32;
             --primary-cat: #c62828;
@@ -31,9 +31,7 @@
             box-shadow: 0 0 50px rgba(0,0,0,0.1); 
         }
 
-        /* =========================================
-           1. 로그인 화면 (Gemini Style 복구)
-           ========================================= */
+        /* 1. 로그인 화면 */
         #login-screen { 
             position: absolute; inset: 0; z-index: 9999; 
             background: #fff; 
@@ -47,9 +45,7 @@
         .login-input { width: 100%; border: none; background: transparent; padding: 15px; font-size: 1.2rem; outline: none; }
         .login-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.5rem; color: #4285F4; cursor: pointer; }
 
-        /* =========================================
-           2. 서비스 선택 (Trendy Accordion Style)
-           ========================================= */
+        /* 2. 서비스 선택 (Trendy Accordion) */
         #selection-screen {
             position: absolute; inset: 0;
             display: flex;
@@ -58,63 +54,37 @@
         }
 
         .hero-card {
-            flex: 1;
-            height: 100%;
-            position: relative;
+            flex: 1; height: 100%; position: relative;
             transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            overflow: hidden;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            padding-bottom: 80px;
-            border-right: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden; cursor: pointer;
+            display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+            padding-bottom: 80px; border-right: 1px solid rgba(255,255,255,0.1);
         }
-
         .hero-card:last-child { border-right: none; }
-
-        /* 배경 그라데이션 */
         .hero-bg {
             position: absolute; inset: 0; opacity: 0.6; transition: 0.6s;
             background-size: cover; background-position: center;
         }
-        /* 각 캐릭터별 테마색 */
         .card-panda .hero-bg { background: linear-gradient(to bottom, #2e7d32, #000); }
         .card-cat .hero-bg { background: linear-gradient(to bottom, #c62828, #000); }
         .card-owl .hero-bg { background: linear-gradient(to bottom, #1565c0, #000); }
 
-        /* 캐릭터 이미지 */
         .hero-img {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0.8);
-            width: 250px; height: 250px;
-            object-fit: contain;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
+            width: 250px; height: 250px; object-fit: contain;
             transition: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
             filter: grayscale(80%) brightness(0.7);
         }
-
-        /* 텍스트 정보 */
         .hero-info {
-            position: relative; z-index: 10;
-            text-align: center;
-            opacity: 0.7;
-            transform: translateY(20px);
-            transition: 0.4s;
+            position: relative; z-index: 10; text-align: center; opacity: 0.7;
+            transform: translateY(20px); transition: 0.4s;
         }
         .hero-title {
-            font-family: 'Black Han Sans', sans-serif;
-            font-size: 2rem; color: #fff;
-            margin: 0;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            font-family: 'Black Han Sans', sans-serif; font-size: 2rem; color: #fff;
+            margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
-        .hero-desc {
-            font-size: 0.9rem; color: rgba(255,255,255,0.8);
-            margin-top: 5px; opacity: 0; transition: 0.4s;
-        }
+        .hero-desc { font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-top: 5px; opacity: 0; transition: 0.4s; }
 
-        /* ★ Hover Interaction (펼쳐짐 효과) */
         .hero-card:hover { flex: 2.5; }
         .hero-card:hover .hero-bg { opacity: 1; }
         .hero-card:hover .hero-img {
@@ -125,25 +95,19 @@
         .hero-card:hover .hero-info { opacity: 1; transform: translateY(0); }
         .hero-card:hover .hero-desc { opacity: 1; }
 
-        /* 선택 시 플래시 효과 */
         .selection-overlay {
-            position: absolute; inset: 0; background: #fff;
-            opacity: 0; pointer-events: none; transition: 0.1s;
+            position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; transition: 0.1s;
         }
 
-        /* =========================================
-           3. 메인 앱 내부 (깔끔한 모던 스타일 복구)
-           ========================================= */
+        /* 3. 메인 앱 내부 */
         #main-header { 
             flex-shrink: 0; padding: 15px; display: flex; justify-content: space-between; align-items: center; 
-            background: #fff; z-index: 50; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            transition: background 0.3s;
+            background: #fff; z-index: 50; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: background 0.3s;
         }
         .header-title { font-weight: 700; font-size: 1.1rem; }
         .nav-btn { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 5px 12px; font-size: 0.9rem; border: none; cursor: pointer; color: white; }
         .nav-btn:hover { background: rgba(255,255,255,0.3); }
 
-        /* 버튼 스타일 */
         .action-btn { 
             border-radius: 16px; padding: 16px; border: none; font-size: 1.1rem; font-weight: 700; cursor: pointer; 
             transition: transform 0.1s, box-shadow 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 100%; color: white;
@@ -153,33 +117,32 @@
         .bg-cat { background: var(--primary-cat); }
         .bg-owl { background: var(--primary-owl); }
 
-        /* 입력창 스타일 */
         .modern-input { 
             width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #ddd; 
             font-size: 1rem; text-align: center; margin-bottom: 15px; outline: none; transition: 0.2s;
         }
         .modern-input:focus { border-color: #4285F4; box-shadow: 0 0 0 3px rgba(66,133,244,0.1); }
 
-        /* 앱별 테마 배경 */
         .theme-tarot .app-container { background: #e8f5e9; } 
         .theme-saju .app-container { background: #fffdf5; }
         .theme-owl .app-container { background: #e3f2fd; }
 
-        /* 마크다운 */
-        .markdown-body { font-size: 0.95rem; line-height: 1.6; color: #333; }
+        /* 마크다운 스타일링 (가독성 UP) */
+        .markdown-body { font-size: 0.95rem; line-height: 1.7; color: #333; }
         .markdown-body strong { color: #d32f2f; font-weight: 700; }
-        .markdown-body h2 { border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-top: 20px; font-size: 1.1rem; }
-        
-        /* 뷰엉이 스캐너 */
+        .markdown-body h2 { 
+            border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-top: 25px; margin-bottom: 15px;
+            font-size: 1.15rem; font-weight: 800; color: #1a237e;
+        }
+        .markdown-body p { margin-bottom: 10px; }
+
         .owl-scanner { width: 100%; height: 300px; background: #000; border-radius: 12px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .scan-line { position: absolute; width: 100%; height: 2px; background: #00ff00; top: 0; box-shadow: 0 0 15px #00ff00; animation: scan 2s infinite linear; }
         @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
         
-        /* 타로 카드 그리드 */
         #tarot-card-table { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; padding: 20px; overflow-y: auto; }
         .tarot-card { width: 50px; height: 80px; background: linear-gradient(135deg, #4a148c, #311b92); border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); cursor: pointer; transition: 0.2s; }
         .tarot-card.selected { transform: translateY(-10px) scale(1.1); border-color: #ffd700; box-shadow: 0 5px 15px rgba(0,0,0,0.3); background: #fff; }
-
     </style>
 </head>
 <body>
@@ -226,7 +189,6 @@
                 <p class="hero-desc">팩트 폭격 관상가</p>
             </div>
         </div>
-        
         <div id="sel-overlay" class="selection-overlay"></div>
     </div>
 
@@ -241,7 +203,6 @@
             <div id="tarot-view-start" class="flex flex-col items-center justify-center text-center h-full">
                 <img src="./panda.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3069/3069172.png'" class="w-32 h-32 rounded-full border-4 border-white shadow-lg mb-6 bg-white object-cover">
                 <h2 class="text-2xl font-bold text-green-900 mb-2">무엇이 궁금한가?</h2>
-                <p class="text-green-700 mb-6 text-sm">타로 카드로 당신의 고민을 들여다봅니다.</p>
                 <input type="text" id="tarot-input" placeholder="예: 이번 프로젝트 잘 될까?" class="modern-input" onkeypress="if(event.key==='Enter') startTarotFlow()">
                 <button class="action-btn bg-panda" onclick="startTarotFlow()">상담 시작</button>
             </div>
@@ -279,7 +240,6 @@
                 <img src="./owl.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/820/820963.png'" class="w-32 h-32 rounded-full border-4 border-white shadow-lg mb-6 bg-white object-cover">
                 <h2 class="text-2xl font-bold text-blue-900 mb-2">관상 팩트 폭격</h2>
                 <p class="text-blue-700 mb-6 text-sm">"보정 떡칠 사진은 사절. 원본 가져와."</p>
-                
                 <input type="file" id="owl-upload" accept="image/*" class="hidden" onchange="handleOwlImage(this)">
                 <button class="action-btn bg-owl" onclick="document.getElementById('owl-upload').click()">
                     📷 사진 업로드
@@ -353,24 +313,20 @@
 
     // --- 2. Selection (Trendy) ---
     window.selectService = (mode) => {
-        // Flash Effect
         const overlay = document.getElementById('sel-overlay');
         overlay.style.opacity = '1';
-        
         setTimeout(() => {
             currentMode = mode;
             document.getElementById('selection-screen').classList.add('hidden');
             document.getElementById('main-app-ui').classList.remove('hidden');
-            document.body.className = `theme-${mode}`; // Set Theme
+            document.body.className = `theme-${mode}`; 
             overlay.style.opacity = '0';
 
-            // Header Color Setting
             const header = document.getElementById('main-header');
             if(mode === 'tarot') header.style.background = '#2e7d32';
             else if(mode === 'saju') header.style.background = '#c62828';
             else header.style.background = '#1565c0';
 
-            // Show App
             ['tarot-app', 'saju-app', 'owl-app'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(`${mode}-app`).classList.remove('hidden');
 
@@ -470,7 +426,7 @@
         } catch(e) { alert("오류: "+e.message); resetCurrentMode(); }
     };
 
-    // [Owl] - UPDATED LOGIC (Deep Analysis & Top 5)
+    // [Owl] - UPDATED PROMPT (Detailed & Sarcastic)
     window.handleOwlImage = (input) => {
         if(input.files && input.files[0]) {
             const reader = new FileReader();
@@ -480,28 +436,24 @@
     };
     async function startOwlAnalysis(base64) {
         showView('owl-view-scan');
-        const msgs = [
-            "(안경을 치켜올리며) 흐음... 데이터 로딩 중...", 
-            "안면 픽셀 정밀 타격 준비...", 
-            "견적 산출 중... 마음의 준비 하세요.",
-            "이런 데이터는 처음인데... 재계산 중..."
-        ];
+        const msgs = ["(안경을 치켜올리며) 흐음...", "데이터 분석 중... 결과가 처참하군요.", "픽셀 단위로 뜯어보는 중..."];
         document.getElementById('owl-loading-msg').innerText = msgs[Math.floor(Math.random()*msgs.length)];
         
-        // 🔥 업데이트된 프롬프트: 4단계 상세 분석 + Top 5 통계
+        // 🔥 상세하고 긴 분량 요청 + 부엉이 말투
         const prompt = `
         당신은 냉철한 데이터 분석가이자 독설가인 AI '뷰엉이(View-Owl)'입니다.
-        사용자가 업로드한 얼굴 사진을 분석하여 아래 [출력 형식]에 맞춰 가차 없는 팩트 폭격 리포트를 작성하세요.
+        사용자가 업로드한 얼굴 사진을 분석하여 가차 없는 팩트 폭격 리포트를 작성하세요.
+        **분량은 기존보다 훨씬 길고 상세하게 작성해야 합니다.**
 
-        [성격 및 말투]
-        - 감정 따위 없는 건조하고 시니컬한 말투. (예: "데이터상 답이 없군요.", "희망? 그런 건 수치에 없습니다.")
-        - 전문 용어(알고리즘, 픽셀, 빅데이터 등)를 섞어 쓰지만 결론은 상대를 비꼬는 내용이어야 합니다.
-        - 존댓말을 쓰되, 듣는 사람 기분 나쁘게 정중하게 공격하세요.
+        [성격 및 말투 가이드]
+        - **말투:** "흐음...", "흥미롭군요.", "데이터상...", "결과가 참 처참하네요." 같은 추임새를 사용하세요.
+        - **어조:** 감정 없는 건조한 AI 톤 + 상대를 은근히 무시하는 지식인(부엉이)의 오만함.
+        - **어미:** "~군요.", "~네요.", "~입니까?", "~겁니다." 등 정중하지만 차가운 말투 유지.
 
         [출력 형식 - 반드시 이 순서와 제목을 지킬 것]
 
         ## 📊 1. 심층 관상 데이터 분석 (Deep Analysis)
-        (여기에는 5~6문장으로 아주 상세하게 외모를 묘사하며 비꼬세요. 눈, 코, 입, 피부 상태, 표정 등을 하나하나 짚어가며 팩트로 때리세요. 예: "눈동자의 초점이 흐린 걸 보니 평소 생각이 없는 편이군요.")
+        (이 부분은 **최소 8문장 이상**으로 아주 길고 상세하게 작성하세요. 픽셀 단위로 뜯어보듯 눈, 코, 입, 피부 트러블, 다크서클, 표정의 비굴함 등을 적나라하게 묘사하며 비꼬세요. 외모 지적뿐만 아니라 그 얼굴에 담긴 게으른 인생까지 유추해서 팩트로 때리세요.)
 
         ## 🧬 2. 유사 생물종 매칭 Top 5 (Species Match)
         (당신과 닮은 동물 5마리를 선정하고 싱크로율(%)을 표시하세요. 1위는 가장 닮은 동물입니다.)
@@ -512,12 +464,12 @@
         5. 5️⃣ **[동물5]**: OO%
 
         ## 💡 3. 매칭 이유 (Why?)
-        (1위로 선정된 동물과 사용자가 왜 닮았는지 Sarcastic하게 설명하세요. 외모뿐만 아니라 게으름, 멍청함, 사나움 등의 성격적 결함을 연결 지으세요. 예: "나무늘보가 나온 이유는 단순히 눈이 처져서가 아닙니다. 아무것도 하기 싫어하는 저 무기력한 입매가 99% 일치하기 때문이죠.")
+        (1위 동물 선정 이유를 **길고 논리적으로(Sarcastic)** 설명하세요. 단순히 외모뿐만 아니라, 그 동물의 습성(예: 나무늘보의 게으름, 하이에나의 비열함)이 사용자의 관상에서 어떻게 드러나는지 구체적인 근거를 들어 비꼬세요.)
 
         ## 📉 4. 뷰엉이의 최종 진단 (Conclusion)
-        (마지막으로 뼈 때리는 한 줄 요약과 엉뚱한 행운의 아이템 추천)
-        - **한 줄 평:** [내용]
-        - **추천 아이템:** [현대적이고 엉뚱한 물건] (예: 안면 인식 차단 마스크, 야근 방지용 부적)
+        - **한 줄 평:** (뼈를 때리는 한 문장)
+        - **추천 아이템:** (현대적이고 엉뚱한 물건 추천. 예: 안면 인식 차단 마스크, 야근 방지용 부적)
+        - **뷰엉이의 조언:** "데이터는 거짓말을 하지 않습니다. 당신의 얼굴이 문제일 뿐." (이런 식의 마무리 멘트 추가)
         `;
 
         try {
