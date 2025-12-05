@@ -38,6 +38,11 @@
             display: flex; flex-direction: column; 
             padding: 40px; justify-content: center; 
         }
+        .version-label {
+            position: absolute; top: 20px; right: 20px;
+            font-size: 0.85rem; color: #aaa; font-weight: 700;
+            background: #f1f3f4; padding: 4px 10px; border-radius: 12px;
+        }
         .login-greeting { font-size: 3rem; font-weight: 700; line-height: 1.2; margin-bottom: 40px; color: #1f1f1f; }
         .login-greeting span { background: linear-gradient(90deg, #4285F4, #9B72CB, #D96570); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .login-input-box { position: relative; background: #f1f3f4; border-radius: 16px; padding: 5px; transition: 0.3s; border: 2px solid transparent; }
@@ -127,7 +132,6 @@
         .theme-saju .app-container { background: #fffdf5; }
         .theme-owl .app-container { background: #e3f2fd; }
 
-        /* 마크다운 스타일링 (가독성 UP) */
         .markdown-body { font-size: 0.95rem; line-height: 1.7; color: #333; }
         .markdown-body strong { color: #d32f2f; font-weight: 700; }
         .markdown-body h2 { 
@@ -150,6 +154,7 @@
 <div class="app-container">
 
     <div id="login-screen">
+        <div class="version-label">v3.0.0</div>
         <div class="login-greeting">
             안녕하세요,<br>
             <span>HG AI Agents</span>에<br>
@@ -196,7 +201,7 @@
         <header id="main-header">
             <button onclick="goHome()" class="nav-btn">◀ 처음으로</button>
             <h1 id="header-title" class="header-title text-white">서비스</h1>
-            <button onclick="openHistory()" class="nav-btn">기록</button>
+            <button id="history-btn" onclick="openHistory()" class="nav-btn">기록</button>
         </header>
 
         <div id="tarot-app" class="hidden flex-1 flex flex-col overflow-hidden p-6">
@@ -270,9 +275,8 @@
 
         <div id="common-view-history" class="hidden absolute inset-0 bg-white z-50 flex flex-col p-6">
             <h3 class="text-center font-bold text-xl mb-4 text-gray-800">상담 기록</h3>
-            <div id="history-list" class="flex-1 bg-gray-50 rounded-xl p-4 overflow-y-auto text-center text-gray-500 text-sm">
-                DB 연결이 필요합니다.
-            </div>
+            <div id="history-list" class="flex-1 bg-gray-50 rounded-xl p-4 overflow-y-auto space-y-3">
+                </div>
             <button class="action-btn bg-gray-200 mt-4 !text-gray-700" onclick="document.getElementById('common-view-history').classList.add('hidden')">닫기</button>
         </div>
     </div>
@@ -282,13 +286,15 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Firebase (기존 유지)
+    // ✅ Firebase 연결 복구 (제공해주신 Key 적용)
     const tarotConfig = { apiKey: "AIzaSyDuQDOi5wxabpqdqu-CJfdR-krk5Q08tBA", projectId: "test-9da10", appId: "1:578765851412:web:5d9d30e09f8427d1a49001" };
     const sajuConfig = { apiKey: "AIzaSyB-y3inMOTdj48gwlh0eftUc_YfyNTeJmc", projectId: "sajutest-e4eaa", appId: "1:753725539148:web:f2d67dd6b3adf6514345e9" };
+    
     let dbTarot, dbSaju;
     try {
         const appTarot = initializeApp(tarotConfig, "tarotApp"); dbTarot = getFirestore(appTarot);
         const appSaju = initializeApp(sajuConfig, "sajuApp"); dbSaju = getFirestore(appSaju);
+        console.log("Firebase Connected Successfully");
     } catch(e) { console.error("Firebase Init Error:", e); }
 
     let currentMode = null; 
@@ -323,9 +329,20 @@
             overlay.style.opacity = '0';
 
             const header = document.getElementById('main-header');
-            if(mode === 'tarot') header.style.background = '#2e7d32';
-            else if(mode === 'saju') header.style.background = '#c62828';
-            else header.style.background = '#1565c0';
+            const historyBtn = document.getElementById('history-btn');
+
+            if(mode === 'tarot') {
+                header.style.background = '#2e7d32';
+                historyBtn.classList.remove('hidden'); // 기록 보기 가능
+            }
+            else if(mode === 'saju') {
+                header.style.background = '#c62828';
+                historyBtn.classList.remove('hidden'); // 기록 보기 가능
+            }
+            else { // Owl
+                header.style.background = '#1565c0';
+                historyBtn.classList.add('hidden'); // 🔥 뷰엉이 모드: 기록 버튼 숨김
+            }
 
             ['tarot-app', 'saju-app', 'owl-app'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(`${mode}-app`).classList.remove('hidden');
@@ -410,6 +427,7 @@
         const prompt = `질문:"${gameState.question}". 시드:${JSON.stringify(gameState.selections)}. 역할:타로 판다. 말투:지혜로운 판다. 형식:해석/조언/결론. 필수:[📝 요약] 3줄.`;
         try {
             const text = await callGemini(prompt); displayResult(gameState.question, text);
+            // ✅ Firebase 저장
             if(dbTarot) addDoc(collection(dbTarot, "tarot_readings"), { question: gameState.question, response: text, timestamp: new Date() });
         } catch(e) { alert("오류: "+e.message); resetCurrentMode(); }
     }
@@ -422,11 +440,12 @@
         const prompt = `생년월일:${info.date} ${info.time}. 고민:"${q}". 역할:무속인 고양이. 말투:냥체. 형식:풀이/운세/조언. 필수:[📝 요약] 3줄.`;
         try {
             const text = await callGemini(prompt); displayResult(q, text);
+            // ✅ Firebase 저장
             if(dbSaju) addDoc(collection(dbSaju, "saju_history"), { question: q, answer: text, date: new Date().toISOString() });
         } catch(e) { alert("오류: "+e.message); resetCurrentMode(); }
     };
 
-    // [Owl] - UPDATED PROMPT (Detailed & Sarcastic)
+    // [Owl]
     window.handleOwlImage = (input) => {
         if(input.files && input.files[0]) {
             const reader = new FileReader();
@@ -439,7 +458,6 @@
         const msgs = ["(안경을 치켜올리며) 흐음...", "데이터 분석 중... 결과가 처참하군요.", "픽셀 단위로 뜯어보는 중..."];
         document.getElementById('owl-loading-msg').innerText = msgs[Math.floor(Math.random()*msgs.length)];
         
-        // 🔥 상세하고 긴 분량 요청 + 부엉이 말투
         const prompt = `
         당신은 냉철한 데이터 분석가이자 독설가인 AI '뷰엉이(View-Owl)'입니다.
         사용자가 업로드한 얼굴 사진을 분석하여 가차 없는 팩트 폭격 리포트를 작성하세요.
@@ -475,6 +493,7 @@
         try {
             const text = await callGemini(prompt, false, base64); 
             displayResult("[ 🦉 뷰엉이 분석 리포트 ]", text);
+            // ❌ 뷰엉이는 기록 저장하지 않음 (보안/프라이버시)
         } catch(e) { 
             alert("분석 실패: " + e.message); 
             resetCurrentMode(); 
@@ -487,8 +506,49 @@
         document.getElementById('common-view-result').classList.remove('hidden');
     }
     
-    window.openHistory = () => {
+    // --- History Loading Logic ---
+    window.openHistory = async () => {
         document.getElementById('common-view-history').classList.remove('hidden');
+        const listEl = document.getElementById('history-list');
+        listEl.innerHTML = "데이터 로딩 중...";
+
+        if(!dbTarot || !dbSaju) {
+            listEl.innerHTML = "DB 연결 오류";
+            return;
+        }
+
+        let db, col, field, q;
+        if (currentMode === 'tarot') {
+            db = dbTarot; col = 'tarot_readings'; field = 'timestamp';
+        } else if (currentMode === 'saju') {
+            db = dbSaju; col = 'saju_history'; field = 'date';
+        } else {
+            listEl.innerHTML = "기록 기능이 지원되지 않는 모드입니다.";
+            return;
+        }
+
+        try {
+            const qRef = query(collection(db, col), orderBy(field, "desc"), limit(20));
+            const snap = await getDocs(qRef);
+            listEl.innerHTML = "";
+            
+            if(snap.empty) {
+                listEl.innerHTML = "기록이 없습니다.";
+                return;
+            }
+
+            snap.forEach(d => {
+                const data = d.data();
+                const div = document.createElement('div');
+                div.className = "bg-white p-3 rounded shadow-sm flex justify-between items-center text-left cursor-pointer hover:bg-gray-50";
+                div.onclick = () => displayResult(data.question, data.response || data.answer);
+                div.innerHTML = `<span class="truncate font-bold text-gray-700 w-full">${data.question}</span>`;
+                listEl.appendChild(div);
+            });
+        } catch(e) {
+            console.error(e);
+            listEl.innerHTML = "기록을 불러오지 못했습니다.";
+        }
     }
 </script>
 </body>
