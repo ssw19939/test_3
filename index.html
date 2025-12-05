@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HG AI Agents - Premium (Fixed)</title>
+    <title>HG AI Agents - Fixed History</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Montserrat:wght@800&family=Pretendard:wght@300;500;700&display=swap" rel="stylesheet">
@@ -102,7 +102,7 @@
 <div class="app-container">
 
     <div id="login-screen">
-        <div class="version-label">v3.0.5 (Fixed)</div>
+        <div class="version-label">v3.0.6 (History Fixed)</div>
         <div class="login-greeting">
             안녕하세요,<br>
             <span>HG AI Agents</span>에<br>
@@ -268,11 +268,10 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // ─────────────────────────────────────────────────────────────
-    // [중요] 여기에 본인의 Firebase 설정값을 붙여넣으세요.
-    // 기존에 복잡하게 2개로 나뉘었던 설정을 하나로 통합했습니다.
+    // [중요] 여기에 본인의 Firebase 설정값을 꼭 채워주세요.
     // ─────────────────────────────────────────────────────────────
     const firebaseConfig = {
         apiKey: "여기에_API_KEY",
@@ -283,16 +282,12 @@
         appId: "여기에_APP_ID"
     };
 
-    // Firebase 초기화 (단일 DB 연결로 통합)
     let app, db;
     try {
         app = initializeApp(firebaseConfig);
         db = getFirestore(app);
-        console.log("Firebase DB Connected Successfully");
     } catch(e) { 
-        console.error("Firebase Init Error:", e);
-        // 설정값이 비어있을 경우 알림
-        if(e.code === 'app/no-app') alert("Firebase 설정값이 입력되지 않았습니다. 코드를 확인해주세요.");
+        if(e.code === 'app/no-app') alert("Firebase 설정값을 코드에 입력해주세요.");
     }
 
     let currentMode = null; 
@@ -440,7 +435,6 @@
         
         try {
             const text = await callGemini(prompt); displayResult(gameState.question, text);
-            // 통합된 db 사용
             if(db) addDoc(collection(db, "tarot_readings"), { question: gameState.question, response: text, timestamp: new Date() });
         } catch(e) { alert("오류: "+e.message); resetCurrentMode(); }
     }
@@ -457,7 +451,6 @@
         
         try {
             const text = await callGemini(prompt); displayResult(q, text);
-            // 통합된 db 사용
             if(db) await addDoc(collection(db, "saju_history"), { question: q, answer: text, date: new Date().toISOString() });
         } catch(e) { alert("오류: "+e.message); resetCurrentMode(); }
     };
@@ -503,7 +496,6 @@
         try {
             const text = await callGemini(prompt, false, base64); 
             displayResult("[ 🦉 뷰엉이 분석 리포트 ]", text);
-            // 통합된 db 사용
             if(db) await addDoc(collection(db, "owl_readings"), { question: "관상 분석", response: text, timestamp: new Date() });
         } catch(e) { alert("분석 실패: " + e.message); resetCurrentMode(); }
     }
@@ -514,7 +506,9 @@
         document.getElementById('common-view-result').classList.remove('hidden');
     }
     
-    // --- History Loading Logic (Unified) ---
+    // ─────────────────────────────────────────────────────────────
+    // [핵심 수정] History Loading Logic (오류 방지 버전)
+    // ─────────────────────────────────────────────────────────────
     window.openHistory = async () => {
         document.getElementById('common-view-history').classList.remove('hidden');
         const listEl = document.getElementById('history-list');
@@ -522,30 +516,41 @@
 
         if(!db) { listEl.innerHTML = "<div class='text-center text-red-500'>DB 연결 안됨 (Config 확인 필요)</div>"; return; }
 
-        let col, field;
-        if (currentMode === 'tarot') { col = 'tarot_readings'; field = 'timestamp'; }
-        else if (currentMode === 'saju') { col = 'saju_history'; field = 'date'; }
-        else { col = 'owl_readings'; field = 'timestamp'; } 
+        let col;
+        if (currentMode === 'tarot') col = 'tarot_readings';
+        else if (currentMode === 'saju') col = 'saju_history';
+        else col = 'owl_readings'; 
 
         try {
-            // 통합된 db 변수 하나만 사용
-            const qRef = query(collection(db, col), orderBy(field, "desc"), limit(20));
+            // [수정] orderBy 제거 (인덱스 오류/필드 없음 오류 방지)
+            const qRef = query(collection(db, col), limit(30)); 
             const snap = await getDocs(qRef);
-            listEl.innerHTML = "";
             
             if(snap.empty) {
                 listEl.innerHTML = `<div class="p-4 text-gray-500 text-center">아직 기록이 없습니다.</div>`;
                 return;
             }
 
-            snap.forEach(d => {
-                const data = d.data();
+            // [수정] 데이터를 다 가져온 후, 자바스크립트에서 정렬 (안전함)
+            let docs = [];
+            snap.forEach(d => docs.push(d.data()));
+
+            // 날짜(문자열)와 타임스탬프(객체) 모두 처리 가능한 안전한 정렬
+            docs.sort((a, b) => {
+                const tA = a.timestamp?.seconds || (a.date ? new Date(a.date).getTime()/1000 : 0) || 0;
+                const tB = b.timestamp?.seconds || (b.date ? new Date(b.date).getTime()/1000 : 0) || 0;
+                return tB - tA; // 최신순
+            });
+
+            listEl.innerHTML = "";
+            docs.forEach(data => {
                 const div = document.createElement('div');
                 div.className = "bg-white p-4 rounded-lg shadow-sm flex justify-between items-center text-left cursor-pointer hover:bg-gray-50 transition border border-gray-100";
                 div.onclick = () => displayResult(data.question || "관상 분석", data.response || data.answer);
                 div.innerHTML = `<span class="truncate font-bold text-gray-700 w-full text-sm">Q. ${data.question || "관상 분석"}</span>`;
                 listEl.appendChild(div);
             });
+
         } catch(e) {
             console.error(e);
             listEl.innerHTML = `<div class='text-center text-red-500'>기록을 불러오지 못했습니다.<br><small>${e.message}</small></div>`;
