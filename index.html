@@ -168,6 +168,7 @@
         /* 마크다운 */
         .markdown-body { font-size: 0.95rem; line-height: 1.6; color: #333; }
         .markdown-body strong { color: #d32f2f; font-weight: 700; }
+        .markdown-body h2 { border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-top: 20px; font-size: 1.1rem; }
         
         /* 뷰엉이 스캐너 */
         .owl-scanner { width: 100%; height: 300px; background: #000; border-radius: 12px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
@@ -469,7 +470,7 @@
         } catch(e) { alert("오류: "+e.message); resetCurrentMode(); }
     };
 
-    // [Owl]
+    // [Owl] - UPDATED LOGIC (Deep Analysis & Top 5)
     window.handleOwlImage = (input) => {
         if(input.files && input.files[0]) {
             const reader = new FileReader();
@@ -479,13 +480,53 @@
     };
     async function startOwlAnalysis(base64) {
         showView('owl-view-scan');
-        const msgs = ["(안경을 닦으며) 흐음...", "데이터 분석 중...", "견적 내는 중..."];
+        const msgs = [
+            "(안경을 치켜올리며) 흐음... 데이터 로딩 중...", 
+            "안면 픽셀 정밀 타격 준비...", 
+            "견적 산출 중... 마음의 준비 하세요.",
+            "이런 데이터는 처음인데... 재계산 중..."
+        ];
         document.getElementById('owl-loading-msg').innerText = msgs[Math.floor(Math.random()*msgs.length)];
         
-        const prompt = `역할:독설가 뷰엉이. 사진 관상 분석. 1.인간 극딜(Sarcastic) 2.동물 극찬 3.팩폭 결론. 출력:[뷰엉이 리포트] 형식.`;
+        // 🔥 업데이트된 프롬프트: 4단계 상세 분석 + Top 5 통계
+        const prompt = `
+        당신은 냉철한 데이터 분석가이자 독설가인 AI '뷰엉이(View-Owl)'입니다.
+        사용자가 업로드한 얼굴 사진을 분석하여 아래 [출력 형식]에 맞춰 가차 없는 팩트 폭격 리포트를 작성하세요.
+
+        [성격 및 말투]
+        - 감정 따위 없는 건조하고 시니컬한 말투. (예: "데이터상 답이 없군요.", "희망? 그런 건 수치에 없습니다.")
+        - 전문 용어(알고리즘, 픽셀, 빅데이터 등)를 섞어 쓰지만 결론은 상대를 비꼬는 내용이어야 합니다.
+        - 존댓말을 쓰되, 듣는 사람 기분 나쁘게 정중하게 공격하세요.
+
+        [출력 형식 - 반드시 이 순서와 제목을 지킬 것]
+
+        ## 📊 1. 심층 관상 데이터 분석 (Deep Analysis)
+        (여기에는 5~6문장으로 아주 상세하게 외모를 묘사하며 비꼬세요. 눈, 코, 입, 피부 상태, 표정 등을 하나하나 짚어가며 팩트로 때리세요. 예: "눈동자의 초점이 흐린 걸 보니 평소 생각이 없는 편이군요.")
+
+        ## 🧬 2. 유사 생물종 매칭 Top 5 (Species Match)
+        (당신과 닮은 동물 5마리를 선정하고 싱크로율(%)을 표시하세요. 1위는 가장 닮은 동물입니다.)
+        1. 🥇 **[동물1]**: OO%
+        2. 🥈 **[동물2]**: OO%
+        3. 🥉 **[동물3]**: OO%
+        4. 4️⃣ **[동물4]**: OO%
+        5. 5️⃣ **[동물5]**: OO%
+
+        ## 💡 3. 매칭 이유 (Why?)
+        (1위로 선정된 동물과 사용자가 왜 닮았는지 Sarcastic하게 설명하세요. 외모뿐만 아니라 게으름, 멍청함, 사나움 등의 성격적 결함을 연결 지으세요. 예: "나무늘보가 나온 이유는 단순히 눈이 처져서가 아닙니다. 아무것도 하기 싫어하는 저 무기력한 입매가 99% 일치하기 때문이죠.")
+
+        ## 📉 4. 뷰엉이의 최종 진단 (Conclusion)
+        (마지막으로 뼈 때리는 한 줄 요약과 엉뚱한 행운의 아이템 추천)
+        - **한 줄 평:** [내용]
+        - **추천 아이템:** [현대적이고 엉뚱한 물건] (예: 안면 인식 차단 마스크, 야근 방지용 부적)
+        `;
+
         try {
-            const text = await callGemini(prompt, false, base64); displayResult("[사진 분석 결과]", text);
-        } catch(e) { alert("실패: " + e.message); resetCurrentMode(); }
+            const text = await callGemini(prompt, false, base64); 
+            displayResult("[ 🦉 뷰엉이 분석 리포트 ]", text);
+        } catch(e) { 
+            alert("분석 실패: " + e.message); 
+            resetCurrentMode(); 
+        }
     }
 
     function displayResult(q, text) {
