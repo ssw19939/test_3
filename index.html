@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HG AI Agents - Fixed History</title>
+    <title>HG AI Agents - Perfect Fix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Montserrat:wght@800&family=Pretendard:wght@300;500;700&display=swap" rel="stylesheet">
@@ -102,7 +102,7 @@
 <div class="app-container">
 
     <div id="login-screen">
-        <div class="version-label">v3.0.6 (History Fixed)</div>
+        <div class="version-label">v3.0.7</div>
         <div class="login-greeting">
             안녕하세요,<br>
             <span>HG AI Agents</span>에<br>
@@ -271,24 +271,20 @@
     import { getFirestore, collection, addDoc, query, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // ─────────────────────────────────────────────────────────────
-    // [중요] 여기에 본인의 Firebase 설정값을 꼭 채워주세요.
+    // [원상복구] DB가 2개이므로 각각 연결합니다. (키값 복원됨)
     // ─────────────────────────────────────────────────────────────
-    const firebaseConfig = {
-        apiKey: "여기에_API_KEY",
-        authDomain: "여기에_AUTH_DOMAIN",
-        projectId: "여기에_PROJECT_ID",
-        storageBucket: "여기에_STORAGE_BUCKET",
-        messagingSenderId: "여기에_SENDER_ID",
-        appId: "여기에_APP_ID"
-    };
-
-    let app, db;
+    const tarotConfig = { apiKey: "AIzaSyDuQDOi5wxabpqdqu-CJfdR-krk5Q08tBA", projectId: "test-9da10", appId: "1:578765851412:web:5d9d30e09f8427d1a49001" };
+    const sajuConfig = { apiKey: "AIzaSyB-y3inMOTdj48gwlh0eftUc_YfyNTeJmc", projectId: "sajutest-e4eaa", appId: "1:753725539148:web:f2d67dd6b3adf6514345e9" };
+    
+    let dbTarot, dbSaju;
     try {
-        app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-    } catch(e) { 
-        if(e.code === 'app/no-app') alert("Firebase 설정값을 코드에 입력해주세요.");
-    }
+        const appTarot = initializeApp(tarotConfig, "tarotApp");
+        dbTarot = getFirestore(appTarot);
+        
+        const appSaju = initializeApp(sajuConfig, "sajuApp");
+        dbSaju = getFirestore(appSaju);
+        console.log("✅ Dual DB Connected");
+    } catch(e) { console.error("Firebase Init Error:", e); }
 
     let currentMode = null; 
     let userApiKey = null; 
@@ -435,7 +431,8 @@
         
         try {
             const text = await callGemini(prompt); displayResult(gameState.question, text);
-            if(db) addDoc(collection(db, "tarot_readings"), { question: gameState.question, response: text, timestamp: new Date() });
+            // 판다 DB 사용
+            if(dbTarot) addDoc(collection(dbTarot, "tarot_readings"), { question: gameState.question, response: text, timestamp: new Date() });
         } catch(e) { alert("오류: "+e.message); resetCurrentMode(); }
     }
 
@@ -451,7 +448,8 @@
         
         try {
             const text = await callGemini(prompt); displayResult(q, text);
-            if(db) await addDoc(collection(db, "saju_history"), { question: q, answer: text, date: new Date().toISOString() });
+            // 사주 DB 사용
+            if(dbSaju) await addDoc(collection(dbSaju, "saju_history"), { question: q, answer: text, date: new Date().toISOString() });
         } catch(e) { alert("오류: "+e.message); resetCurrentMode(); }
     };
 
@@ -496,7 +494,8 @@
         try {
             const text = await callGemini(prompt, false, base64); 
             displayResult("[ 🦉 뷰엉이 분석 리포트 ]", text);
-            if(db) await addDoc(collection(db, "owl_readings"), { question: "관상 분석", response: text, timestamp: new Date() });
+            // 부엉이(판다DB 공유) 사용
+            if(dbTarot) await addDoc(collection(dbTarot, "owl_readings"), { question: "관상 분석", response: text, timestamp: new Date() });
         } catch(e) { alert("분석 실패: " + e.message); resetCurrentMode(); }
     }
 
@@ -507,22 +506,22 @@
     }
     
     // ─────────────────────────────────────────────────────────────
-    // [핵심 수정] History Loading Logic (오류 방지 버전)
+    // [핵심 수정] 1. 적절한 DB 선택  2. 클라이언트 정렬(오류방지)
     // ─────────────────────────────────────────────────────────────
     window.openHistory = async () => {
         document.getElementById('common-view-history').classList.remove('hidden');
         const listEl = document.getElementById('history-list');
         listEl.innerHTML = "<div class='text-center text-gray-500'>데이터 로딩 중...</div>";
 
-        if(!db) { listEl.innerHTML = "<div class='text-center text-red-500'>DB 연결 안됨 (Config 확인 필요)</div>"; return; }
+        let db, col;
+        if (currentMode === 'tarot') { db = dbTarot; col = 'tarot_readings'; }
+        else if (currentMode === 'saju') { db = dbSaju; col = 'saju_history'; }
+        else { db = dbTarot; col = 'owl_readings'; } // 부엉이는 타로DB 사용
 
-        let col;
-        if (currentMode === 'tarot') col = 'tarot_readings';
-        else if (currentMode === 'saju') col = 'saju_history';
-        else col = 'owl_readings'; 
+        if(!db) { listEl.innerHTML = "<div class='text-center text-red-500'>DB 연결 안됨</div>"; return; }
 
         try {
-            // [수정] orderBy 제거 (인덱스 오류/필드 없음 오류 방지)
+            // [수정] DB에서는 그냥 최신순 20개만 가져오고 (정렬 없이)
             const qRef = query(collection(db, col), limit(30)); 
             const snap = await getDocs(qRef);
             
@@ -531,15 +530,15 @@
                 return;
             }
 
-            // [수정] 데이터를 다 가져온 후, 자바스크립트에서 정렬 (안전함)
+            // [수정] 여기서 자바스크립트로 정렬합니다 (인덱스 오류 원천 차단)
             let docs = [];
             snap.forEach(d => docs.push(d.data()));
 
-            // 날짜(문자열)와 타임스탬프(객체) 모두 처리 가능한 안전한 정렬
             docs.sort((a, b) => {
-                const tA = a.timestamp?.seconds || (a.date ? new Date(a.date).getTime()/1000 : 0) || 0;
-                const tB = b.timestamp?.seconds || (b.date ? new Date(b.date).getTime()/1000 : 0) || 0;
-                return tB - tA; // 최신순
+                // 사주는 date(String), 타로/부엉이는 timestamp(Object)라 분기 처리
+                const timeA = a.date ? new Date(a.date).getTime() : (a.timestamp ? a.timestamp.seconds * 1000 : 0);
+                const timeB = b.date ? new Date(b.date).getTime() : (b.timestamp ? b.timestamp.seconds * 1000 : 0);
+                return timeB - timeA; // 내림차순 (최신이 위로)
             });
 
             listEl.innerHTML = "";
