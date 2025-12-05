@@ -17,7 +17,7 @@
         body { 
             background-color: #f8f9fa; 
             margin: 0; 
-            overflow: hidden; /* 전체 스크롤 방지 */
+            overflow: hidden; 
             font-family: 'Pretendard', sans-serif; 
             display: flex; justify-content: center; align-items: center; height: 100dvh; 
         }
@@ -29,29 +29,14 @@
             background: #fff; box-shadow: 0 0 50px rgba(0,0,0,0.1); 
         }
 
-        /* --- 레이아웃 유틸리티 (반응형 핵심) --- */
-        .view-container {
-            display: flex; flex-direction: column; height: 100%; width: 100%; overflow: hidden;
-        }
-        .content-scroll {
-            flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        /* 내용이 적을때도 상단 정렬이 필요하면 justify-start 등으로 변경 가능, 지금은 중앙 정렬 유지 */
-        
-        .bottom-fixed {
-            flex-shrink: 0; padding: 20px; background: white; border-top: 1px solid #f0f0f0; width: 100%; z-index: 10;
-        }
+        /* 레이아웃 유틸리티 */
+        .view-container { display: flex; flex-direction: column; height: 100%; width: 100%; overflow: hidden; }
+        .content-scroll { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .bottom-fixed { flex-shrink: 0; padding: 20px; background: white; border-top: 1px solid #f0f0f0; width: 100%; z-index: 10; }
 
         /* 1. 로그인 */
-        #login-screen { 
-            position: absolute; inset: 0; z-index: 9999; background: #fff; 
-            display: flex; flex-direction: column; padding: 40px; justify-content: center; 
-        }
-        .version-label {
-            position: absolute; top: 20px; right: 20px;
-            font-size: 0.85rem; color: #aaa; font-weight: 700;
-            background: #f1f3f4; padding: 4px 10px; border-radius: 12px;
-        }
+        #login-screen { position: absolute; inset: 0; z-index: 9999; background: #fff; display: flex; flex-direction: column; padding: 40px; justify-content: center; }
+        .version-label { position: absolute; top: 20px; right: 20px; font-size: 0.85rem; color: #aaa; font-weight: 700; background: #f1f3f4; padding: 4px 10px; border-radius: 12px; }
         .login-greeting { font-size: 3rem; font-weight: 700; line-height: 1.2; margin-bottom: 40px; color: #1f1f1f; }
         .login-greeting span { background: linear-gradient(90deg, #4285F4, #9B72CB, #D96570); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .login-input-box { position: relative; background: #f1f3f4; border-radius: 16px; padding: 5px; transition: 0.3s; border: 2px solid transparent; }
@@ -60,24 +45,14 @@
         .login-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.5rem; color: #4285F4; cursor: pointer; }
 
         /* 2. 선택 화면 */
-        #selection-screen {
-            position: absolute; inset: 0; display: flex; background: #000; z-index: 9000;
-        }
-        .hero-card {
-            flex: 1; height: 100%; position: relative; transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            overflow: hidden; cursor: pointer; display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-            padding-bottom: 80px; border-right: 1px solid rgba(255,255,255,0.1);
-        }
+        #selection-screen { position: absolute; inset: 0; display: flex; background: #000; z-index: 9000; }
+        .hero-card { flex: 1; height: 100%; position: relative; transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1); overflow: hidden; cursor: pointer; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 80px; border-right: 1px solid rgba(255,255,255,0.1); }
         .hero-card:last-child { border-right: none; }
         .hero-bg { position: absolute; inset: 0; opacity: 0.6; transition: 0.6s; background-size: cover; background-position: center; }
         .card-panda .hero-bg { background: linear-gradient(to bottom, #2e7d32, #000); }
         .card-cat .hero-bg { background: linear-gradient(to bottom, #c62828, #000); }
         .card-owl .hero-bg { background: linear-gradient(to bottom, #1565c0, #000); }
-        .hero-img {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
-            width: 250px; height: 250px; object-fit: contain; transition: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            filter: grayscale(80%) brightness(0.7);
-        }
+        .hero-img { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); width: 250px; height: 250px; object-fit: contain; transition: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); filter: grayscale(80%) brightness(0.7); }
         .hero-info { position: relative; z-index: 10; text-align: center; opacity: 0.7; transform: translateY(20px); transition: 0.4s; }
         .hero-title { font-family: 'Black Han Sans', sans-serif; font-size: 2rem; color: #fff; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         .hero-desc { font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-top: 5px; opacity: 0; transition: 0.4s; }
@@ -89,27 +64,18 @@
         .selection-overlay { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; transition: 0.1s; }
 
         /* 3. 앱 내부 UI */
-        #main-header { 
-            flex-shrink: 0; padding: 15px; display: flex; justify-content: space-between; align-items: center; 
-            background: #fff; z-index: 50; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: background 0.3s;
-        }
+        #main-header { flex-shrink: 0; padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 50; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: background 0.3s; }
         .header-title { font-weight: 700; font-size: 1.1rem; }
         .nav-btn { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 5px 12px; font-size: 0.9rem; border: none; cursor: pointer; color: white; }
         .nav-btn:hover { background: rgba(255,255,255,0.3); }
 
-        .action-btn { 
-            border-radius: 16px; padding: 16px; border: none; font-size: 1.1rem; font-weight: 700; cursor: pointer; 
-            transition: transform 0.1s; width: 100%; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
+        .action-btn { border-radius: 16px; padding: 16px; border: none; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: transform 0.1s; width: 100%; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .action-btn:active { transform: scale(0.98); }
         .bg-panda { background: var(--primary-panda); }
         .bg-cat { background: var(--primary-cat); }
         .bg-owl { background: var(--primary-owl); }
 
-        .modern-input { 
-            width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #ddd; 
-            font-size: 1rem; text-align: center; margin-bottom: 10px; outline: none; transition: 0.2s; background: #fff;
-        }
+        .modern-input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #ddd; font-size: 1rem; text-align: center; margin-bottom: 10px; outline: none; transition: 0.2s; background: #fff; }
         .modern-input:focus { border-color: #4285F4; box-shadow: 0 0 0 3px rgba(66,133,244,0.1); }
         select.modern-input { appearance: none; cursor: pointer; }
 
@@ -120,10 +86,7 @@
         /* 마크다운 */
         .markdown-body { font-size: 0.95rem; line-height: 1.7; color: #333; width: 100%; }
         .markdown-body strong { color: #d32f2f; font-weight: 700; }
-        .markdown-body h2 { 
-            border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-top: 25px; margin-bottom: 15px;
-            font-size: 1.15rem; font-weight: 800; color: #1a237e;
-        }
+        .markdown-body h2 { border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-top: 25px; margin-bottom: 15px; font-size: 1.15rem; font-weight: 800; color: #1a237e; }
         
         .owl-scanner { width: 100%; height: 300px; background: #000; border-radius: 12px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .scan-line { position: absolute; width: 100%; height: 2px; background: #00ff00; top: 0; box-shadow: 0 0 15px #00ff00; animation: scan 2s infinite linear; }
@@ -139,7 +102,7 @@
 <div class="app-container">
 
     <div id="login-screen">
-        <div class="version-label">v3.0.3</div>
+        <div class="version-label">v3.0.4</div>
         <div class="login-greeting">
             안녕하세요,<br>
             <span>HG AI Agents</span>에<br>
@@ -199,16 +162,15 @@
                     <button class="action-btn bg-panda" onclick="startTarotFlow()">상담 시작</button>
                 </div>
             </div>
-
             <div id="tarot-shuffle-view" class="hidden h-full flex flex-col items-center justify-center">
                 <h3 id="tarot-loading-text" class="text-2xl font-bold text-green-800 animate-pulse text-center px-4">카드를 섞는 중...</h3>
             </div>
-
             <div id="tarot-view-game" class="hidden view-container">
                 <div class="text-center py-4 bg-green-50 shadow-sm flex-shrink-0">
                     <span id="tarot-stage-info" class="font-bold text-lg text-green-800">카드 선택</span>
                 </div>
-                <div class="content-scroll items-start"> <div id="tarot-card-table"></div>
+                <div class="content-scroll items-start">
+                    <div id="tarot-card-table"></div>
                 </div>
                 <div class="bottom-fixed hidden" id="tarot-next-btn-container">
                     <button id="tarot-next-btn" class="action-btn bg-panda shadow-lg" onclick="confirmTarotSelection()">다음 단계</button>
@@ -263,7 +225,6 @@
                     </button>
                 </div>
             </div>
-
             <div id="owl-view-scan" class="hidden h-full flex flex-col items-center justify-center">
                 <div class="owl-scanner mb-6">
                     <img id="owl-preview-img" class="h-full object-contain z-10">
@@ -279,7 +240,6 @@
                 <span class="font-bold text-gray-600">분석 결과</span>
                 <button onclick="resetCurrentMode()" class="text-sm text-gray-400 font-bold hover:text-gray-600">닫기 ✖</button>
             </div>
-            
             <div class="flex-1 overflow-y-auto p-6">
                 <div class="bg-gray-50 p-4 rounded-xl mb-6 border border-gray-100">
                     <span class="font-bold text-gray-500 text-xs block mb-1">QUESTION</span>
@@ -287,7 +247,6 @@
                 </div>
                 <div id="result-content" class="markdown-body"></div>
             </div>
-
             <div class="bottom-fixed">
                 <button class="action-btn bg-gray-800" onclick="resetCurrentMode()">다른 질문하기</button>
             </div>
@@ -298,8 +257,7 @@
                 <h3 class="font-bold text-xl text-gray-800">상담 기록</h3>
             </div>
             <div class="flex-1 overflow-y-auto p-4 bg-gray-100">
-                <div id="history-list" class="space-y-3">
-                    </div>
+                <div id="history-list" class="space-y-3"></div>
             </div>
             <div class="bottom-fixed">
                 <button class="action-btn bg-gray-200 !text-gray-700" onclick="document.getElementById('common-view-history').classList.add('hidden')">닫기</button>
@@ -353,20 +311,12 @@
             overlay.style.opacity = '0';
 
             const header = document.getElementById('main-header');
-            const historyBtn = document.getElementById('history-btn');
+            if(mode === 'tarot') header.style.background = '#2e7d32';
+            else if(mode === 'saju') header.style.background = '#c62828';
+            else header.style.background = '#1565c0';
 
-            if(mode === 'tarot') {
-                header.style.background = '#2e7d32';
-                historyBtn.classList.remove('hidden');
-            }
-            else if(mode === 'saju') {
-                header.style.background = '#c62828';
-                historyBtn.classList.remove('hidden');
-            }
-            else { // Owl
-                header.style.background = '#1565c0';
-                historyBtn.classList.add('hidden'); 
-            }
+            // 모든 모드에서 기록 버튼 활성화
+            document.getElementById('history-btn').classList.remove('hidden');
 
             ['tarot-app', 'saju-app', 'owl-app'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(`${mode}-app`).classList.remove('hidden');
@@ -416,7 +366,7 @@
 
     // --- Logic per Service ---
     
-    // [Tarot]
+    // [Tarot] - With Shuffle
     window.startTarotFlow = () => {
         const q = document.getElementById('tarot-input').value;
         if(!q) return alert("질문을 입력하세요.");
@@ -428,21 +378,37 @@
         if(idx >= TAROT_STAGES.length) { finishTarotProcess(); return; }
         
         showView('tarot-shuffle-view');
-        // [수정] 셔플 시 멘트 리셋
         document.getElementById('tarot-loading-text').innerText = "카드를 섞는 중...";
         
         setTimeout(() => { showView('tarot-view-game'); setupTarotTable(TAROT_STAGES[idx]); }, 800);
     }
+    
+    // 🔥 카드 셔플 로직 추가됨
     function setupTarotTable(config) {
         document.getElementById('tarot-stage-info').innerText = `${config.name} (${config.pick}장 선택)`;
-        const table = document.getElementById('tarot-card-table'); table.innerHTML = "";
+        const table = document.getElementById('tarot-card-table'); 
+        table.innerHTML = "";
+
+        // 1. 0부터 count까지 숫자 배열 생성
+        let deck = Array.from({length: config.count}, (_, i) => i);
+        // 2. Fisher-Yates Shuffle
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+
         for(let i=0; i<config.count; i++) {
             const card = document.createElement('div'); card.className = "tarot-card";
+            const cardValue = deck[i]; // 섞인 값 할당
+
             card.onclick = () => {
                 if(card.classList.contains('selected')) return;
                 const currentList = gameState.selections[config.key];
                 if(currentList.length >= config.pick) return;
-                card.classList.add('selected'); currentList.push(i); 
+                
+                card.classList.add('selected'); 
+                currentList.push(cardValue); // 섞인 값 저장
+                
                 if(currentList.length === config.pick) document.getElementById('tarot-next-btn-container').classList.remove('hidden');
             };
             table.appendChild(card);
@@ -452,11 +418,8 @@
     window.confirmTarotSelection = () => startTarotStage(gameState.stage + 1);
     async function finishTarotProcess() {
         showView('tarot-shuffle-view'); 
-        
-        // [수정] 결과 분석 시 멘트 변경
         document.getElementById('tarot-loading-text').innerText = "운명을 분석 중이다 판다...\n(대나무 잎 점을 치는 중)";
 
-        // [수정] 판다 말투 강화
         const prompt = `질문:"${gameState.question}". 시드:${JSON.stringify(gameState.selections)}. 
         역할: 지리산 대나무 숲의 현자 '타로 판다'. 
         말투: 문장 끝을 '~판다', '~했다 곰', '음... 대나무 향기가 나는군' 등 판다 캐릭터성 극대화. 
@@ -472,23 +435,16 @@
     // [Saju]
     window.startSajuFlow = async () => {
         const q = document.getElementById('saju-input').value; if(!q) return alert("고민을 입력하세요.");
-        
         const gender = document.getElementById('saju-gender').value;
-        const info = { 
-            date: document.getElementById('saju-date').value, 
-            time: document.getElementById('saju-time').value 
-        };
+        const info = { date: document.getElementById('saju-date').value, time: document.getElementById('saju-time').value };
         
         showView('saju-view-loading');
         
-        const prompt = `성별:${gender}. 생년월일:${info.date} ${info.time}. 고민:"${q}". 역할:무속인 고양이. 말투: "~다냥", "내 눈엔 보인다냥", "츄르 값은 줘야지?" 등 고양이 컨셉 유지. 형식:풀이/운세/조언. 필수:[📝 고양이의 요약] 3줄.`;
+        const prompt = `성별:${gender}. 생년월일:${info.date} ${info.time}. 고민:"${q}". 역할:무속인 고양이. 말투:냥체(~다냥). 형식:풀이/운세/조언. 필수:[📝 고양이의 요약] 3줄.`;
         
         try {
             const text = await callGemini(prompt); displayResult(q, text);
-            // [수정] 기록 저장 확실하게
-            if(dbSaju) {
-                await addDoc(collection(dbSaju, "saju_history"), { question: q, answer: text, date: new Date().toISOString() });
-            }
+            if(dbSaju) await addDoc(collection(dbSaju, "saju_history"), { question: q, answer: text, date: new Date().toISOString() });
         } catch(e) { alert("오류: "+e.message); resetCurrentMode(); }
     };
 
@@ -508,8 +464,7 @@
         const prompt = `
         당신은 냉철한 데이터 분석가이자 독설가인 AI '뷰엉이(View-Owl)'입니다.
         사용자가 업로드한 얼굴 사진을 분석하여 가차 없는 팩트 폭격 리포트를 작성하세요.
-        **분량은 길고 상세하게 작성해야 합니다.**
-
+        
         [성격 및 말투 가이드]
         - **말투:** "부엉...", "훗.", "흐음...", "내 야간 투시력으로 보아하니..." 같은 부엉이 특유의 추임새와 비유를 사용하세요.
         - **어조:** 감정 없는 건조한 AI 톤 + 상대를 은근히 무시하는 지식인(부엉이)의 오만함.
@@ -534,10 +489,9 @@
         try {
             const text = await callGemini(prompt, false, base64); 
             displayResult("[ 🦉 뷰엉이 분석 리포트 ]", text);
-        } catch(e) { 
-            alert("분석 실패: " + e.message); 
-            resetCurrentMode(); 
-        }
+            // 🔥 뷰엉이 기록 저장 (판다 DB 공유)
+            if(dbTarot) await addDoc(collection(dbTarot, "owl_readings"), { question: "관상 분석", response: text, timestamp: new Date() });
+        } catch(e) { alert("분석 실패: " + e.message); resetCurrentMode(); }
     }
 
     function displayResult(q, text) {
@@ -550,22 +504,14 @@
     window.openHistory = async () => {
         document.getElementById('common-view-history').classList.remove('hidden');
         const listEl = document.getElementById('history-list');
-        listEl.innerHTML = "데이터 로딩 중...";
+        listEl.innerHTML = "<div class='text-center text-gray-500'>데이터 로딩 중...</div>";
 
-        if(!dbTarot || !dbSaju) {
-            listEl.innerHTML = "DB 연결 오류";
-            return;
-        }
+        if(!dbTarot || !dbSaju) { listEl.innerHTML = "DB 연결 오류"; return; }
 
         let db, col, field;
-        if (currentMode === 'tarot') {
-            db = dbTarot; col = 'tarot_readings'; field = 'timestamp';
-        } else if (currentMode === 'saju') {
-            db = dbSaju; col = 'saju_history'; field = 'date';
-        } else {
-            listEl.innerHTML = "기록 기능이 지원되지 않는 모드입니다.";
-            return;
-        }
+        if (currentMode === 'tarot') { db = dbTarot; col = 'tarot_readings'; field = 'timestamp'; }
+        else if (currentMode === 'saju') { db = dbSaju; col = 'saju_history'; field = 'date'; }
+        else { db = dbTarot; col = 'owl_readings'; field = 'timestamp'; } // 뷰엉이는 타로DB의 owl_readings 사용
 
         try {
             const qRef = query(collection(db, col), orderBy(field, "desc"), limit(20));
@@ -580,14 +526,14 @@
             snap.forEach(d => {
                 const data = d.data();
                 const div = document.createElement('div');
-                div.className = "bg-white p-4 rounded-lg shadow-sm flex justify-between items-center text-left cursor-pointer hover:bg-green-50 transition border border-gray-100";
+                div.className = "bg-white p-4 rounded-lg shadow-sm flex justify-between items-center text-left cursor-pointer hover:bg-gray-50 transition border border-gray-100";
                 div.onclick = () => displayResult(data.question, data.response || data.answer);
                 div.innerHTML = `<span class="truncate font-bold text-gray-700 w-full text-sm">Q. ${data.question}</span>`;
                 listEl.appendChild(div);
             });
         } catch(e) {
             console.error(e);
-            listEl.innerHTML = "기록을 불러오지 못했습니다.";
+            listEl.innerHTML = "<div class='text-center text-red-500'>기록을 불러오지 못했습니다.</div>";
         }
     }
 </script>
